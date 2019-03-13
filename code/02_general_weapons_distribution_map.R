@@ -71,7 +71,7 @@ p <- ggplot() +
   )
 
 ggsave(
-  filename = "general_weapns_distribution_map.png",
+  filename = "02_general_weapns_distribution_map.png",
   plot = p,
   device = "png",
   path = "plots/",
