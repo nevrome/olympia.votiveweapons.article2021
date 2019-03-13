@@ -1,0 +1,133 @@
+library(magrittr)
+library(ggplot2)
+
+load("data/weapons.RData")
+artefacts <- weapons
+
+artefacts %<>% 
+  tidyr::unite(
+    "typology_collection", 
+    typology_class_1, 
+    typology_class_2, 
+    typology_class_3, 
+    typology_class_4,
+    sep = " ", 
+    remove = FALSE
+  ) %>%
+  dplyr::mutate(
+    equipment_type = dplyr::case_when(
+      grepl("Helm", typology_collection) ~ "Helm",
+      grepl("Beinschiene", typology_collection) ~ "Beinschiene",
+      grepl("Lanze", typology_collection) ~ "Lanze",
+      grepl("Schild", typology_collection) ~ "Schild",
+      grepl("Panzer", typology_collection) ~ "Panzer",
+      TRUE ~ NA_character_
+    )
+  ) %>%
+  dplyr::select(
+    -typology_collection
+  )
+
+equip_artefacts <- artefacts %>%
+  dplyr::filter(
+    !is.na(find_area) & !is.na(equipment_type) 
+  )
+
+equip_count_general <- equip_artefacts %>%
+  dplyr::group_by(
+    find_area, equipment_type
+  ) %>%
+  dplyr::tally() %>%
+  dplyr::ungroup() %>%
+  dplyr::mutate(
+    type = dplyr::case_when(
+      "Helm" == equipment_type ~ "single",
+      "Beinschiene" == equipment_type ~ "double",
+      "Lanze" == equipment_type ~ "single",
+      "Schild" == equipment_type ~ "single",
+      "Panzer" == equipment_type ~ "single",
+      TRUE ~ NA_character_
+    )
+  ) 
+
+not_beinschiene <- equip_count_general %>%
+  dplyr::filter(
+    equipment_type != "Beinschiene"
+  ) %>%
+  dplyr::group_by(
+    find_area
+  ) %>%
+  dplyr::mutate(
+    exp_min = min(n),
+    exp_mean = mean(n),
+    exp_max = max(n)
+  ) %>%
+  dplyr::ungroup()
+
+beinschiene <- equip_count_general %>%
+  dplyr::filter(
+    equipment_type == "Beinschiene"
+  ) %>%
+  dplyr::mutate(
+    exp_min = NA,
+    exp_mean = NA,
+    exp_max = NA
+  )
+
+equip_count <- base::rbind(not_beinschiene, beinschiene)
+
+equip_count <- equip_count %>%
+  dplyr::group_by(
+    find_area
+  ) %>%
+  dplyr::mutate(
+    exp_min = ifelse(
+      is.na(exp_min), mean(exp_min, na.rm = T) * 2, exp_min
+    ),
+    exp_mean = ifelse(
+      is.na(exp_mean), mean(exp_mean, na.rm = T) * 2, exp_mean
+    ),
+    exp_max = ifelse(
+      is.na(exp_max), mean(exp_max, na.rm = T)* 2, exp_max
+    )
+  )
+
+p <- ggplot(equip_count) +
+  geom_bar(
+    aes(
+      x = equipment_type,
+      y = n
+    ),
+    stat = "identity",
+    fill = "black"
+  ) +
+  geom_errorbar(
+    aes(
+      x = equipment_type,
+      ymin = exp_min,
+      ymax = exp_max
+    ),
+    color = "red",
+    width = 0.3
+  ) +
+  geom_point(
+    aes(
+      x = equipment_type,
+      y = exp_mean
+    ),
+    color = "red"
+  ) +
+  theme_bw() +
+  facet_wrap(~find_area) 
+
+ggsave(
+  filename = "06_equipment_completeness.png",
+  plot = p,
+  device = "png",
+  path = "plots",
+  width = 250,
+  height = 200,
+  units = "mm",
+  dpi = 300
+)
+
