@@ -57,7 +57,7 @@ olympia_artefacts_3 %<>%
   )
 
 # dating
-source("code/01_data_preparation/99_dating_preparation_helper_functions.R")
+source("code/99_dating_preparation_helper_functions.R")
 
 olympia_artefacts_3 %<>% tibble::add_column(
   dating_typology_start = dating_decision(
