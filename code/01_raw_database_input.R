@@ -141,7 +141,8 @@ olympia_artefacts_4 <- olympia_artefacts_3 %>%
       !is.na(find_area) &
       !is.na(dating_typology_start) &
       !is.na(dating_typology_end) &
-      (dating_typology_start <= -500 & dating_typology_end >= -1000)
+      dating_typology_start <= -500 & 
+      dating_typology_end >= -1000
   )
 
 #### store result table ####
