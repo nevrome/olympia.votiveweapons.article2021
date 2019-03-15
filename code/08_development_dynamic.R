@@ -41,6 +41,11 @@ spline <- tibble::tibble(
 
 #### Plot A: number of classes per year + spline ####
 A <- ggplot() +
+  geom_hline(
+    yintercept = 0,
+    color = "blue",
+    linetype = 3
+  ) +
   geom_line(
     data = classes_timeseries,
     mapping = aes(x = date, y = sum)
@@ -48,12 +53,14 @@ A <- ggplot() +
   geom_line(
     data = spline,
     mapping = aes(x = date, y = pred),
-    color = "red"
+    color = "red",
+    size = 1.4
   ) +
   scale_x_continuous(breaks = seq(-1000, -400, 100), limits = c(-1000, -400)) +
   theme_bw() +
-  ylab("Amount of artefact classes") +
-  xlab("")
+  ylab("Amount of classes") +
+  xlab("") +
+  annotate("text", x = -900, y = 10, label = "Cubic smoothing spline", color = "red", size = 3) 
 
 #### derivative ####
 prediction_deriv <- predict(sm, ct$date, deriv = 1)
@@ -67,16 +74,19 @@ deri <- tibble::tibble(
 B <- ggplot(deri) +
   geom_hline(
     yintercept = 0,
-    color = "blue"
+    color = "blue",
+    linetype = 3
   ) +
   geom_line(
     mapping = aes(x = date, y = deriv),
-    color = "red"
+    color = "darkgreen",
+    size = 1.4
   ) +
   scale_x_continuous(breaks = seq(-1000, -400, 100), limits = c(-1000, -400)) +
   theme_bw() +
   ylab("Slope") +
-  xlab("")
+  xlab("")  +
+  annotate("text", x = -900, y = 0.2, label = "Derivative of spline", color = "darkgreen", size = 3) 
 
 #### cultural distance from one timestep to the next ####
 artefacts_timeseries <- aoristAAR::aorist(
@@ -127,13 +137,27 @@ C <- ggplot() +
   scale_fill_gradient2(low = "lightgrey", mid = "yellow", high = "red", midpoint = mean(range(distance$ed))) +
   scale_size(range = c(0.3, 2), guide = FALSE) +
   scale_x_continuous(breaks = seq(-1000, -400, 100), limits = c(-1000, -400)) +
+  ylim(0, max(distance$ed)) +
   theme_bw() +
-  theme(legend.position = "bottom") +
+  theme(
+    legend.position = c(0.15, 0.85),
+    legend.direction = "horizontal",
+    legend.text = element_text(size = 8),
+    legend.title = element_text(size = 8),
+    legend.background = element_rect(fill = "white")
+  ) +
   ylab("Euclidean distance") +
-  xlab("Time")
+  xlab("Time") +
+  guides(
+    fill = guide_colorbar(
+      title = "",
+      title.vjust = 0.6
+    ),
+    color = guide_legend()
+  )
 
 #### combine plots ####
-p <- cowplot::plot_grid(A, B, C, labels = "AUTO", ncol = 1, align = 'v', rel_heights = c(1, 1, 1.3))
+p <- cowplot::plot_grid(A, B, C, labels = "AUTO", ncol = 1, align = 'v', rel_heights = c(1, 1, 1))
 
 ggsave(
   filename = "08_development_dynamic.png",
