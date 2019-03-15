@@ -33,7 +33,7 @@ p <- type3_count %>%
   ylab("Amount of artefacts")
 
 ggsave(
-  filename = "03_typology_class_3_distribution.png",
+  filename = "04_typology_class_3_distribution.png",
   plot = p,
   device = "png",
   path = "plots",
