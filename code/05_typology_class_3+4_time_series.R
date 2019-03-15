@@ -15,7 +15,7 @@ artefacts <- artefacts %>%
     n = dplyr::n()
   ) %>%
   dplyr::filter(
-    n > 5
+    n >= 5
   ) %>%
   dplyr::ungroup()
 
