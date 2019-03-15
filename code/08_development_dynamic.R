@@ -31,12 +31,12 @@ classes_timeseries <- aoristAAR::aorist(
 ct <- classes_timeseries
 ct$sum <- tidyr::replace_na(ct$sum, 0)
 
-spline_model <- smooth.spline(ct$date, ct$sum, spar = 1)
-prediction_spline <- predict(sm, ct$date)
+spline_model <- smooth.spline(ct$date, ct$sum, spar = 0.5)
+prediction_spline <- predict(spline_model, ct$date)
 
 spline <- tibble::tibble(
-  date = prediction_model$x,
-  pred = prediction_model$y
+  date = prediction_spline$x,
+  pred = prediction_spline$y
 )
 
 #### Plot A: number of classes per year + spline ####
@@ -63,7 +63,7 @@ A <- ggplot() +
   annotate("text", x = -900, y = 10, label = "Cubic smoothing spline", color = "red", size = 3) 
 
 #### derivative ####
-prediction_deriv <- predict(sm, ct$date, deriv = 1)
+prediction_deriv <- predict(spline_model, ct$date, deriv = 1)
 
 deri <- tibble::tibble(
   date = prediction_deriv$x,
@@ -169,6 +169,3 @@ ggsave(
   units = "mm",
   dpi = 300
 )
-
-
-
