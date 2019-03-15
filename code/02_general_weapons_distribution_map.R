@@ -37,7 +37,7 @@ p <- ggplot() +
   ) +
   scale_fill_gradient2(
     low = "white", mid = "orange", high = "darkred", 
-    guide = "colorbar", na.value = "lightgrey",
+    guide = "colorbar", na.value = "darkgrey",
     midpoint = mean(range(areas_artefacts$n, na.rm = TRUE))
   ) +
   guides(
@@ -55,7 +55,9 @@ p <- ggplot() +
     axis.text = element_blank(),
     axis.ticks = element_blank(),
     panel.grid.major = element_line(colour = "white"), 
-    panel.grid.minor = element_line(colour = "white")
+    panel.grid.minor = element_line(colour = "white"),
+    legend.position = c(0.85, 0.95),
+    legend.direction = "horizontal"
   ) +
   annotate(
     "text", x = 555900, y = 4165700,
