@@ -46,7 +46,7 @@ p <- artefacts %>%
     mapping = aes(
       x = general_id,
       y = dating_typology_start,
-      color = typology_class_2
+      color = typology_class_3
     ),
     position = position_dodge(1),
     shape = 18
@@ -56,7 +56,7 @@ p <- artefacts %>%
       x = general_id,
       ymin = dating_typology_start,
       ymax = dating_typology_end,
-      color = typology_class_2
+      color = typology_class_3
     ),
     position = position_dodge(1)
   ) +
