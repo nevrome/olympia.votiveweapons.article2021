@@ -50,8 +50,10 @@ A <- ggplot() +
     mapping = aes(x = date, y = pred),
     color = "red"
   ) +
-  xlim(-1000, -400) +
-  theme_bw()
+  scale_x_continuous(breaks = seq(-1000, -400, 100), limits = c(-1000, -400)) +
+  theme_bw() +
+  ylab("Amount of artefact classes") +
+  xlab("")
 
 #### derivative ####
 prediction_deriv <- predict(sm, ct$date, deriv = 1)
@@ -71,8 +73,10 @@ B <- ggplot(deri) +
     mapping = aes(x = date, y = deriv),
     color = "red"
   ) +
-  xlim(-1000, -400) +
-  theme_bw()
+  scale_x_continuous(breaks = seq(-1000, -400, 100), limits = c(-1000, -400)) +
+  theme_bw() +
+  ylab("Slope") +
+  xlab("")
 
 #### cultural distance from one timestep to the next ####
 artefacts_timeseries <- aoristAAR::aorist(
@@ -122,15 +126,25 @@ C <- ggplot() +
   ) +
   scale_fill_gradient2(low = "lightgrey", mid = "yellow", high = "red", midpoint = mean(range(distance$ed))) +
   scale_size(range = c(0.3, 2), guide = FALSE) +
-  xlim(-1000, -400) +
+  scale_x_continuous(breaks = seq(-1000, -400, 100), limits = c(-1000, -400)) +
   theme_bw() +
-  theme(legend.position = "bottom")
-
+  theme(legend.position = "bottom") +
+  ylab("Euclidean distance") +
+  xlab("Time")
 
 #### combine plots ####
+p <- cowplot::plot_grid(A, B, C, labels = "AUTO", ncol = 1, align = 'v', rel_heights = c(1, 1, 1.3))
 
-cowplot::plot_grid(A, B, C, labels = "AUTO", ncol = 1, align = 'v')
-
+ggsave(
+  filename = "08_development_dynamic.png",
+  plot = p,
+  device = "png",
+  path = "plots",
+  width = 150,
+  height = 200,
+  units = "mm",
+  dpi = 300
+)
 
 
 
