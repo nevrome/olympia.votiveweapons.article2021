@@ -7,6 +7,26 @@ artefacts <- weapons %>%
     typology_fine = ifelse(!is.na(typology_class_4), paste0(typology_class_3, "+", typology_class_4), typology_class_3)
   )
 
+artefacts <- artefacts %>% 
+  dplyr::group_by(
+    typology_fine
+  ) %>%
+  dplyr::mutate(
+    n = dplyr::n()
+  ) %>%
+  dplyr::filter(
+    n > 5
+  ) %>%
+  dplyr::ungroup()
+
+type_fine_amount <- artefacts %>% 
+  dplyr::group_by(
+    typology_fine
+  ) %>%
+  dplyr::summarise(
+    n = dplyr::n()
+  )
+
 artefact_timeseries_df <- aoristAAR::aorist(
   artefacts,
   split_vars = c("typology_class_3", "typology_fine"),
@@ -67,19 +87,32 @@ p <- ggplot() +
   ) +
   geom_point(
     data = typology_fine_centers,
-    mapping = aes(x = date, y = typology_fine, color = typology_class_3)
+    mapping = aes(x = date, y = typology_fine, color = typology_class_3),
+    size = 3
   ) +
   geom_point(
     data = typology_fine_centers,
-    mapping = aes(x = -800, y = typology_fine, color = typology_class_3),
-    size = 3
+    mapping = aes(x = -770, y = typology_fine, color = typology_class_3),
+    size = 5
+  ) +
+  geom_text(
+    data = type_fine_amount,
+    mapping = aes(x = -800, y = typology_fine, label = n),
+    size = 6
   ) +
   theme_bw() +
   theme(
-    axis.text.x = element_text(angle = 25, hjust = 1),
-    legend.position = "bottom"
+    axis.text.x = element_text(size = 17),
+    axis.text.y = element_text(size = 15),
+    axis.title.x = element_text(size = 17),
+    legend.text = element_text(size = 15),
+    legend.position = "bottom",
+    legend.direction = "horizontal"
   ) +
-  xlim(-800, -400)
+  guides(fill = guide_legend("", nrow = 4), color = guide_legend("", nrow = 4)) +
+  xlim(-800, -400) +
+  ylab("") +
+  xlab("Year BC")
 
 ggsave(
   filename = "05_typology_class_3+4_time_series.png",
