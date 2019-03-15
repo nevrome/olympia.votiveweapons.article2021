@@ -18,6 +18,7 @@ artefacts %<>%
     equipment_type = dplyr::case_when(
       grepl("Helm", typology_collection) ~ "Helm",
       grepl("Beinschiene", typology_collection) ~ "Beinschiene",
+      grepl("Armschiene", typology_collection) ~ "Armschiene",
       grepl("Lanze", typology_collection) ~ "Lanze",
       grepl("Schild", typology_collection) ~ "Schild",
       grepl("Panzer", typology_collection) ~ "Panzer",
@@ -30,12 +31,12 @@ artefacts %<>%
 
 equip_artefacts <- artefacts %>%
   dplyr::filter(
-    !is.na(find_area) & !is.na(equipment_type) 
+    !is.na(equipment_type) 
   )
 
 equip_count_general <- equip_artefacts %>%
   dplyr::group_by(
-    find_area, equipment_type
+    equipment_type
   ) %>%
   dplyr::tally() %>%
   dplyr::ungroup() %>%
@@ -43,6 +44,7 @@ equip_count_general <- equip_artefacts %>%
     type = dplyr::case_when(
       "Helm" == equipment_type ~ "single",
       "Beinschiene" == equipment_type ~ "double",
+      "Armschiene" == equipment_type ~ "double",
       "Lanze" == equipment_type ~ "single",
       "Schild" == equipment_type ~ "single",
       "Panzer" == equipment_type ~ "single",
@@ -50,23 +52,19 @@ equip_count_general <- equip_artefacts %>%
     )
   ) 
 
-not_beinschiene <- equip_count_general %>%
+not_double <- equip_count_general %>%
   dplyr::filter(
-    equipment_type != "Beinschiene"
-  ) %>%
-  dplyr::group_by(
-    find_area
+    equipment_type != "Beinschiene" & equipment_type != "Armschiene"
   ) %>%
   dplyr::mutate(
     exp_min = min(n),
     exp_mean = mean(n),
     exp_max = max(n)
-  ) %>%
-  dplyr::ungroup()
+  )
 
-beinschiene <- equip_count_general %>%
+double <- equip_count_general %>%
   dplyr::filter(
-    equipment_type == "Beinschiene"
+    equipment_type == "Beinschiene" | equipment_type == "Armschiene"
   ) %>%
   dplyr::mutate(
     exp_min = NA,
@@ -74,12 +72,9 @@ beinschiene <- equip_count_general %>%
     exp_max = NA
   )
 
-equip_count <- base::rbind(not_beinschiene, beinschiene)
+equip_count <- base::rbind(not_double, double)
 
 equip_count <- equip_count %>%
-  dplyr::group_by(
-    find_area
-  ) %>%
   dplyr::mutate(
     exp_min = ifelse(
       is.na(exp_min), mean(exp_min, na.rm = T) * 2, exp_min
@@ -118,15 +113,16 @@ p <- ggplot(equip_count) +
     color = "red"
   ) +
   theme_bw() +
-  facet_wrap(~find_area) 
+  xlab("") +
+  ylab("Amount of artefacts")
 
 ggsave(
   filename = "06_equipment_completeness.png",
   plot = p,
   device = "png",
   path = "plots",
-  width = 250,
-  height = 200,
+  width = 130,
+  height = 90,
   units = "mm",
   dpi = 300
 )
