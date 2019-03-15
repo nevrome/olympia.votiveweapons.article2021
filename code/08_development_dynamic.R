@@ -50,7 +50,8 @@ A <- ggplot() +
     mapping = aes(x = date, y = pred),
     color = "red"
   ) +
-  xlim(-1000, -400)
+  xlim(-1000, -400) +
+  theme_bw()
 
 #### derivative ####
 prediction_deriv <- predict(sm, ct$date, deriv = 1)
@@ -77,7 +78,9 @@ B <- ggplot(deri) +
 artefacts_timeseries <- aoristAAR::aorist(
   artefacts,
   split_vars = c("typology"),
-  stepwidth = 1,
+  stepwidth = 10,
+  stepstart = -1000,
+  stepstop = -400,
   from = "dating_typology_start",
   to = "dating_typology_end",
   method = "number"
@@ -95,29 +98,31 @@ ma <- df %>%
   as.matrix() %>%
   tidyr::replace_na(0)
 
-res <- c()
+distance_timesteps <- c()
 for (i in 1:(nrow(ma) - 1)) {
-  res[i] <- dist(ma[c(i, i+1),])
+  distance_timesteps[i] <- dist(ma[c(i, i+1),])
 }
 
 distance <- tibble::tibble(
-  date = df$date[-length(df$date)],
-  ed = res   
+  start = df$date[-length(df$date)],
+  end = df$date[-1],
+  mean = (start + end)/2,
+  ed = distance_timesteps   
 )
 
-edi <- distance %>% dplyr::filter(ed != 0) %$% ed
-
+#### Plot C: cultural distance from one timestep to the next ####
 C <- ggplot() +
-  geom_vline(
+  geom_rect(
     data = distance %>% dplyr::filter(ed != 0),
-    aes(xintercept = date, color = ed, size = ed)
+    aes(xmin = start, xmax = end, ymin = 0, ymax = max(ed), fill = ed, size = ed)
   ) +
   geom_point(
     data = distance %>% dplyr::filter(ed != 0),
-    aes(x = date, y = ed)
+    aes(x = mean, y = ed)
   ) +
-  scale_colour_gradient2(low = "grey", mid = "yellow", high = "red", midpoint = mean(range(edi))) +
+  scale_fill_gradient2(low = "lightgrey", mid = "yellow", high = "red", midpoint = mean(range(distance$ed))) +
   scale_size(range = c(0.3, 2), guide = FALSE) +
+  xlim(-1000, -400) +
   theme_bw() +
   theme(legend.position = "bottom")
 
