@@ -2,7 +2,7 @@ library(magrittr)
 
 #### read raw database export ####
 olympia_artefacts_0 <- readr::read_csv(
-  "data/2019-02-15_Olympia_DB.csv",
+  "data/2019-03-15_Olympia_DB.csv",
   na = c("NA", "-1", ""),
   col_types = readr::cols(
     `Datierung_Metall::AnfDatJh` = readr::col_integer(),
@@ -42,8 +42,8 @@ olympia_artefacts_2 <- olympia_artefacts_1 %>%
 olympia_artefacts_3 <- olympia_artefacts_2
 
 # small typology reordering
-weapons_ident <- olympia_artefacts_3$typology_class_2 == "Waffen" & !is.na(olympia_artefacts_3$typology_class_3)
-olympia_artefacts_3$typology_class_2[weapons_ident] <- olympia_artefacts_3$typology_class_3[weapons_ident]
+# weapons_ident <- olympia_artefacts_3$typology_class_2 == "Waffen" & !is.na(olympia_artefacts_3$typology_class_3)
+# olympia_artefacts_3$typology_class_2[weapons_ident] <- olympia_artefacts_3$typology_class_3[weapons_ident]
 
 # modification
 olympia_artefacts_3 %<>%
@@ -148,3 +148,4 @@ olympia_artefacts_4 <- olympia_artefacts_3 %>%
 #### store result table ####
 weapons <- olympia_artefacts_4
 save(weapons, file = "data/weapons.RData")
+
