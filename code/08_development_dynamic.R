@@ -3,34 +3,72 @@ library(ggplot2)
 
 load("data/weapons.RData")
 
-#### 
+#### weapons time series ####
+weapons_timeseries_number <- aoristAAR::aorist(
+  weapons,
+  split_vars = c(),
+  from = "dating_typology_start",
+  to = "dating_typology_end",
+  method = "number"
+) %>%
+  dplyr::transmute(
+    date = date,
+    number = sum
+  )
 
-weapons_timeseries <- aoristAAR::aorist(
+weapons_timeseries_weight <- aoristAAR::aorist(
   weapons,
   split_vars = c(),
   from = "dating_typology_start",
   to = "dating_typology_end",
   method = "weight"
-)
+) %>%
+  dplyr::transmute(
+    date = date,
+    weight = sum
+  )
 
-A0 <- ggplot() +
+weapons_timeseries <- dplyr::full_join(weapons_timeseries_number, weapons_timeseries_weight)
+
+#### Plot A: Weapons time series ####
+A <- ggplot(weapons_timeseries, aes(x = date)) +
   geom_hline(
     yintercept = 0,
     color = "blue",
     linetype = 3
   ) +
   geom_line(
-    data = weapons_timeseries,
-    mapping = aes(x = date, y = sum)
+    mapping = aes(y = number, colour = "Amount of artefacts")
   ) +
-  scale_x_continuous(breaks = seq(-1000, -400, 100), limits = c(-1000, -400)) +
+  geom_line(
+    mapping = aes(y = weight * (max(weapons_timeseries_number$number) / max(weapons_timeseries_weight$weight)), colour = "Corrected artefact weight"),
+    linetype = "dashed",
+    size = 0.5
+  ) +
+  scale_x_continuous(
+    breaks = seq(-1000, -400, 100), limits = c(-1000, -400)
+  ) +
+  scale_y_continuous(
+    name = "Artefact amount",
+    sec.axis = sec_axis(~./(max(weapons_timeseries_number$number) / max(weapons_timeseries_weight$weight)), name = "Artefact weight")
+  ) +
+  scale_colour_manual(
+    values = c("black", "orange")
+  ) +
   theme_bw() +
-  ylab("Amount of artefacts") +
-  xlab("")
+  xlab("Year BC") +
+  theme(
+    legend.position = c(0.01, 0.99),
+    legend.justification = c(0, 1),
+    legend.title = element_blank(),
+    axis.title.y.left = element_text(color = "black"),
+    axis.title.y.right = element_text(color = "orange"),
+    axis.text.y.left = element_text(color = "black"),
+    axis.text.y.right = element_text(color = "orange")
+  )
+
   
-####
-
-
+#### artefact classes ####
 artefacts <- weapons %>% dplyr::filter(
   !is.na(typology_class_1), !is.na(typology_class_2), !is.na(typology_class_3)
 ) %>%
@@ -38,7 +76,6 @@ artefacts <- weapons %>% dplyr::filter(
     typology = paste(typology_class_1, typology_class_2, typology_class_3, sep = "_")
   )
 
-#### artefact classes amound timeseries ###
 classes <- artefacts %>%
   dplyr::group_by(
     dating_typology_start, dating_typology_end, typology
@@ -54,8 +91,6 @@ classes_timeseries <- aoristAAR::aorist(
   method = "number"
 )
 
-#### fit spline ####
-
 ct <- classes_timeseries
 ct$sum <- tidyr::replace_na(ct$sum, 0)
 
@@ -67,8 +102,8 @@ spline <- tibble::tibble(
   pred = prediction_spline$y
 )
 
-#### Plot A: number of classes per year + spline ####
-A <- ggplot() +
+#### Plot B: number of classes per year + spline ####
+B <- ggplot() +
   geom_hline(
     yintercept = 0,
     color = "blue",
@@ -80,15 +115,21 @@ A <- ggplot() +
   ) +
   geom_line(
     data = spline,
-    mapping = aes(x = date, y = pred),
-    color = "red",
-    size = 1.4
+    mapping = aes(x = date, y = pred, color = "Cubic smoothing spline (spar = 0.5)"),
+    size = 1.3
   ) +
   scale_x_continuous(breaks = seq(-1000, -400, 100), limits = c(-1000, -400)) +
   theme_bw() +
   ylab("Amount of classes") +
   xlab("") +
-  annotate("text", x = -900, y = 10, label = "Cubic smoothing spline", color = "red", size = 3) 
+  theme(
+    legend.position = c(0.01, 0.99),
+    legend.justification = c(0, 1),
+    legend.title = element_blank()
+  ) +
+  scale_color_manual(
+    values = "red"
+  )
 
 #### derivative ####
 prediction_deriv <- predict(spline_model, ct$date, deriv = 1)
@@ -98,23 +139,29 @@ deri <- tibble::tibble(
   deriv = prediction_deriv$y
 )
 
-#### Plot B: derivative of spline ####
-B <- ggplot(deri) +
+#### Plot C: derivative of spline ####
+C <- ggplot(deri) +
   geom_hline(
     yintercept = 0,
     color = "blue",
     linetype = 3
   ) +
   geom_line(
-    mapping = aes(x = date, y = deriv),
-    color = "darkgreen",
-    size = 1.4
+    mapping = aes(x = date, y = deriv, color = "First derivative of spline"),
+    size = 1.3
   ) +
   scale_x_continuous(breaks = seq(-1000, -400, 100), limits = c(-1000, -400)) +
   theme_bw() +
   ylab("Slope") +
-  xlab("")  +
-  annotate("text", x = -900, y = 0.2, label = "Derivative of spline", color = "darkgreen", size = 3) 
+  xlab("") +
+  theme(
+    legend.position = c(0.01, 0.99),
+    legend.justification = c(0, 1),
+    legend.title = element_blank()
+  ) +
+  scale_color_manual(
+    values = "darkgreen"
+  ) 
 
 #### cultural distance from one timestep to the next ####
 artefacts_timeseries <- aoristAAR::aorist(
@@ -152,11 +199,22 @@ distance <- tibble::tibble(
   ed = distance_timesteps   
 )
 
-#### Plot C: cultural distance from one timestep to the next ####
-C <- ggplot() +
+#### Plot D: cultural distance from one timestep to the next ####
+D <- ggplot() +
+  geom_hline(
+    yintercept = 0,
+    color = "blue",
+    linetype = 3
+  ) +
   geom_rect(
     data = distance %>% dplyr::filter(ed != 0),
     aes(xmin = start, xmax = end, ymin = 0, ymax = max(ed), fill = ed, size = ed)
+  ) +
+  geom_line(
+    data = distance %>% dplyr::filter(ed != 0),
+    aes(x = mean, y = ed),
+    color = "black",
+    size = 0.3
   ) +
   geom_point(
     data = distance %>% dplyr::filter(ed != 0),
@@ -168,7 +226,8 @@ C <- ggplot() +
   ylim(0, max(distance$ed)) +
   theme_bw() +
   theme(
-    legend.position = c(0.15, 0.85),
+    legend.position = c(0.01, 0.99),
+    legend.justification = c(0, 1),
     legend.direction = "horizontal",
     legend.text = element_text(size = 8),
     legend.title = element_text(size = 8),
@@ -185,7 +244,7 @@ C <- ggplot() +
   )
 
 #### combine plots ####
-p <- cowplot::plot_grid(A0, A, B, C, labels = "AUTO", ncol = 1, align = 'v', rel_heights = c(1, 1, 1, 1))
+p <- cowplot::plot_grid(A, B, C, D, labels = "AUTO", ncol = 1, align = 'v', rel_heights = c(1, 1, 1, 1))
 
 ggsave(
   filename = "08_development_dynamic.png",
@@ -193,7 +252,7 @@ ggsave(
   device = "png",
   path = "plots",
   width = 150,
-  height = 200,
+  height = 220,
   units = "mm",
   dpi = 300
 )
