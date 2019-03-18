@@ -98,20 +98,20 @@ p <- ggplot() +
   ) +
   geom_point(
     data = area_amount,
-    mapping = aes(x = -800, y = find_area),
+    mapping = aes(x = -1000, y = find_area),
     size = 8,
     color = "grey"
   ) +
   geom_text(
     data = area_amount,
-    mapping = aes(x = -800, y = find_area, label = n),
+    mapping = aes(x = -1000, y = find_area, label = n),
     size = 3
   ) +
   theme_bw() +
   theme(
-    axis.text.x = element_text(size = 10)
+    axis.text = element_text(size = 10)
   ) +
-  xlim(-800, -400) +
+  xlim(-1000, -400) +
   xlab("Year BC") +
   ylab("")
   
