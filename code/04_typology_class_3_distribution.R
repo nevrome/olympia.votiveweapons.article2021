@@ -1,10 +1,28 @@
 library(magrittr)
 library(ggplot2)
 
-load("data/weapons.RData")
-artefacts <- weapons
+load("data/weapons_unfiltered.RData")
+artefacts <- weapons_unfiltered
 
-type3_count <- artefacts %>%
+type_count <- artefacts %>%
+  dplyr::filter(
+    !is.na(typology_class_2)
+  ) %>%
+  dplyr::mutate(
+    dated = ifelse(!is.na(dating_typology_start) & !is.na(dating_typology_end), "typological dating", "no dating information")
+  ) %>%
+  dplyr::group_by(
+    typology_class_2, dated
+  ) %>%
+  dplyr::summarise(
+    n = dplyr::n()
+  ) %>%
+  dplyr::ungroup()
+
+general_count <- artefacts %>%
+  dplyr::filter(
+    !is.na(typology_class_2)
+  ) %>%
   dplyr::group_by(
     typology_class_2
   ) %>%
@@ -14,30 +32,41 @@ type3_count <- artefacts %>%
   dplyr::arrange(
     n
   )
+  
 
-type3_count$typology_class_2 <- factor(type3_count$typology_class_2, levels = type3_count$typology_class_2)
+type_count$typology_class_2 <- factor(type_count$typology_class_2, levels = general_count$typology_class_2)
 
-p <- type3_count %>%
+p <- type_count %>%
   ggplot() +
   geom_bar(
-    aes(x = typology_class_2, y = n),
+    aes(x = typology_class_2, y = n, fill = dated),
     stat = "identity"
+  ) +
+  geom_text(
+    data = general_count,
+    aes(x = typology_class_2, y = n, label = n), 
+    position = position_dodge(width = 0.9), 
+    vjust = -0.25,
+    size = 2
   ) +
   theme_bw() +
   theme(
-    legend.position = "bottom",
+    legend.position = c(0.01, 0.99),
+    legend.justification = c(0, 1),
+    legend.title = element_blank(),
+    legend.text = element_text(size = 8),
     axis.text.y = element_text(size = 8),
     axis.text.x = element_text(angle = 45, hjust = 1, size = 7)
   ) +
   xlab("") +
-  ylab("Amount of artefacts")
+  ylab("Amount of artefacts") 
 
 ggsave(
   filename = "04_typology_class_2_distribution.png",
   plot = p,
   device = "png",
   path = "plots",
-  width = 130,
+  width = 150,
   height = 100,
   units = "mm",
   dpi = 300
