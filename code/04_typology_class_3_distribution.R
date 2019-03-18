@@ -32,7 +32,6 @@ general_count <- artefacts %>%
   dplyr::arrange(
     n
   )
-  
 
 type_count$typology_class_2 <- factor(type_count$typology_class_2, levels = general_count$typology_class_2)
 
@@ -46,8 +45,12 @@ p <- type_count %>%
     data = general_count,
     aes(x = typology_class_2, y = n, label = n), 
     position = position_dodge(width = 0.9), 
-    vjust = -0.25,
-    size = 2
+    hjust = -0.25,
+    size = 2.5,
+    angle = 90
+  ) +
+  scale_fill_manual(
+    values = c("grey", "black")
   ) +
   theme_bw() +
   theme(
@@ -59,7 +62,8 @@ p <- type_count %>%
     axis.text.x = element_text(angle = 45, hjust = 1, size = 7)
   ) +
   xlab("") +
-  ylab("Amount of artefacts") 
+  ylab("Amount of artefacts") +
+  ylim(0, max(general_count$n) + 200)
 
 ggsave(
   filename = "04_typology_class_2_distribution.png",
