@@ -132,10 +132,18 @@ olympia_artefacts_3 %<>%
     }
   )
 
-#### create relevant subset for this paper ####
-olympia_artefacts_4 <- olympia_artefacts_3 %>%
+#### create relevant subset for this paper and store them ####
+
+# unfiltered
+weapons_unfiltered <- olympia_artefacts_3 %>%
   dplyr::filter(
-    # category
+    typology_class_1 == "Waffe"
+  )
+save(weapons_unfiltered, file = "data/weapons_unfiltered.RData")
+
+# filtered by time and area
+weapons <- olympia_artefacts_3 %>%
+  dplyr::filter(
     typology_class_1 == "Waffe" &
       !is.na(find_area) &
       !is.na(dating_typology_start) &
@@ -143,18 +151,4 @@ olympia_artefacts_4 <- olympia_artefacts_3 %>%
       dating_typology_start < -400 & 
       dating_typology_end > -1000
   )
-
-#### store result table ####
-weapons <- olympia_artefacts_4
 save(weapons, file = "data/weapons.RData")
-
-#### create relevant subset for this paper ####
-olympia_artefacts_5 <- olympia_artefacts_3 %>%
-  dplyr::filter(
-    # category
-    typology_class_1 == "Waffe"
-  )
-
-weapons_unfiltered <- olympia_artefacts_5
-save(weapons_unfiltered, file = "data/weapons_unfiltered.RData")
-
