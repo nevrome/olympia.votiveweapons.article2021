@@ -28,9 +28,8 @@ olympia_artefacts_1 <- olympia_artefacts_0 %>%
     find_date = "Funddatum",
     find_area = "Herkunft_Lokal_Gebiet",
     typology_class_1 = "Klassifizierung_ObjektartAllgemein",
-    typology_class_2 = "Klassifizierung_ObjektartSpeziell",
-    typology_class_3 = "KurzbeschreibungMetall",
-    typology_class_4 = "Material_Farbe",
+    typology_class_2 = "KurzbeschreibungMetall",
+    typology_class_3 = "Material_Farbe",
     modification_classes = "Beschreibung_Zustand"
   )
 
@@ -42,8 +41,8 @@ olympia_artefacts_2 <- olympia_artefacts_1 %>%
 olympia_artefacts_3 <- olympia_artefacts_2
 
 # small typology reordering
-# weapons_ident <- olympia_artefacts_3$typology_class_2 == "Waffen" & !is.na(olympia_artefacts_3$typology_class_3)
-# olympia_artefacts_3$typology_class_2[weapons_ident] <- olympia_artefacts_3$typology_class_3[weapons_ident]
+# weapons_ident <- olympia_artefacts_3$typology_class_2 == "Waffen" & !is.na(olympia_artefacts_3$typology_class_2)
+# olympia_artefacts_3$typology_class_2[weapons_ident] <- olympia_artefacts_3$typology_class_2[weapons_ident]
 
 # modification
 olympia_artefacts_3 %<>%
@@ -148,4 +147,14 @@ olympia_artefacts_4 <- olympia_artefacts_3 %>%
 #### store result table ####
 weapons <- olympia_artefacts_4
 save(weapons, file = "data/weapons.RData")
+
+#### create relevant subset for this paper ####
+olympia_artefacts_5 <- olympia_artefacts_3 %>%
+  dplyr::filter(
+    # category
+    typology_class_1 == "Waffe"
+  )
+
+weapons_unfiltered <- olympia_artefacts_5
+save(weapons_unfiltered, file = "data/weapons_unfiltered.RData")
 

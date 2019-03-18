@@ -6,7 +6,7 @@ artefacts <- weapons
 
 type3_count <- artefacts %>%
   dplyr::group_by(
-    typology_class_3
+    typology_class_2
   ) %>%
   dplyr::summarise(
     n = dplyr::n()
@@ -15,12 +15,12 @@ type3_count <- artefacts %>%
     n
   )
 
-type3_count$typology_class_3 <- factor(type3_count$typology_class_3, levels = type3_count$typology_class_3)
+type3_count$typology_class_2 <- factor(type3_count$typology_class_2, levels = type3_count$typology_class_2)
 
 p <- type3_count %>%
   ggplot() +
   geom_bar(
-    aes(x = typology_class_3, y = n),
+    aes(x = typology_class_2, y = n),
     stat = "identity"
   ) +
   theme_bw() +
@@ -33,7 +33,7 @@ p <- type3_count %>%
   ylab("Amount of artefacts")
 
 ggsave(
-  filename = "04_typology_class_3_distribution.png",
+  filename = "04_typology_class_2_distribution.png",
   plot = p,
   device = "png",
   path = "plots",

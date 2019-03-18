@@ -3,11 +3,39 @@ library(ggplot2)
 
 load("data/weapons.RData")
 
+#### 
+
+weapons_timeseries <- aoristAAR::aorist(
+  weapons,
+  split_vars = c(),
+  from = "dating_typology_start",
+  to = "dating_typology_end",
+  method = "weight"
+)
+
+A0 <- ggplot() +
+  geom_hline(
+    yintercept = 0,
+    color = "blue",
+    linetype = 3
+  ) +
+  geom_line(
+    data = weapons_timeseries,
+    mapping = aes(x = date, y = sum)
+  ) +
+  scale_x_continuous(breaks = seq(-1000, -400, 100), limits = c(-1000, -400)) +
+  theme_bw() +
+  ylab("Amount of artefacts") +
+  xlab("")
+  
+####
+
+
 artefacts <- weapons %>% dplyr::filter(
-  !is.na(typology_class_1), !is.na(typology_class_2), !is.na(typology_class_3), !is.na(typology_class_4)
+  !is.na(typology_class_1), !is.na(typology_class_2), !is.na(typology_class_3)
 ) %>%
   dplyr::mutate(
-    typology = paste(typology_class_1, typology_class_2, typology_class_3, typology_class_4, sep = "_")
+    typology = paste(typology_class_1, typology_class_2, typology_class_3, sep = "_")
   )
 
 #### artefact classes amound timeseries ###
@@ -157,7 +185,7 @@ C <- ggplot() +
   )
 
 #### combine plots ####
-p <- cowplot::plot_grid(A, B, C, labels = "AUTO", ncol = 1, align = 'v', rel_heights = c(1, 1, 1))
+p <- cowplot::plot_grid(A0, A, B, C, labels = "AUTO", ncol = 1, align = 'v', rel_heights = c(1, 1, 1, 1))
 
 ggsave(
   filename = "08_development_dynamic.png",

@@ -1,8 +1,8 @@
 library(magrittr)
 library(ggplot2)
 
-load("data/weapons.RData")
-artefacts <- weapons
+load("data/weapons_unfiltered.RData")
+artefacts <- weapons_unfiltered
 
 artefacts %<>% 
   tidyr::unite(
@@ -10,7 +10,6 @@ artefacts %<>%
     typology_class_1, 
     typology_class_2, 
     typology_class_3, 
-    typology_class_4,
     sep = " ", 
     remove = FALSE
   ) %>%
@@ -19,7 +18,7 @@ artefacts %<>%
       grepl("Helm", typology_collection) ~ "Helm",
       grepl("Beinschiene", typology_collection) ~ "Beinschiene",
       grepl("Armschiene", typology_collection) ~ "Armschiene",
-      grepl("Lanze", typology_collection) ~ "Lanze",
+      grepl("Lanze|Speer|Sauroter|Stock", typology_collection) ~ "Lanze",
       grepl("Schild", typology_collection) ~ "Schild",
       grepl("Panzer", typology_collection) ~ "Panzer",
       TRUE ~ NA_character_
@@ -44,7 +43,7 @@ equip_count_general <- equip_artefacts %>%
     type = dplyr::case_when(
       "Helm" == equipment_type ~ "single",
       "Beinschiene" == equipment_type ~ "double",
-      "Armschiene" == equipment_type ~ "double",
+      "Armschiene" == equipment_type ~ "single",
       "Lanze" == equipment_type ~ "single",
       "Schild" == equipment_type ~ "single",
       "Panzer" == equipment_type ~ "single",
@@ -52,9 +51,9 @@ equip_count_general <- equip_artefacts %>%
     )
   ) 
 
-not_double <- equip_count_general %>%
+single <- equip_count_general %>%
   dplyr::filter(
-    equipment_type != "Beinschiene" & equipment_type != "Armschiene"
+    type == "single"
   ) %>%
   dplyr::mutate(
     exp_min = min(n),
@@ -64,7 +63,7 @@ not_double <- equip_count_general %>%
 
 double <- equip_count_general %>%
   dplyr::filter(
-    equipment_type == "Beinschiene" | equipment_type == "Armschiene"
+    type == "double"
   ) %>%
   dplyr::mutate(
     exp_min = NA,
@@ -72,7 +71,7 @@ double <- equip_count_general %>%
     exp_max = NA
   )
 
-equip_count <- base::rbind(not_double, double)
+equip_count <- base::rbind(single, double)
 
 equip_count <- equip_count %>%
   dplyr::mutate(

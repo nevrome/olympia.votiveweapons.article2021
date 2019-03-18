@@ -4,7 +4,7 @@ library(ggplot2)
 load("data/weapons.RData")
 artefacts <- weapons %>%
   dplyr::mutate(
-    typology_fine = ifelse(!is.na(typology_class_4), paste0(typology_class_3, "+", typology_class_4), typology_class_3)
+    typology_fine = ifelse(!is.na(typology_class_3), paste0(typology_class_2, "+", typology_class_3), typology_class_2)
   )
 
 artefacts <- artefacts %>% 
@@ -29,7 +29,7 @@ type_fine_amount <- artefacts %>%
 
 artefact_timeseries_df <- aoristAAR::aorist(
   artefacts,
-  split_vars = c("typology_class_3", "typology_fine"),
+  split_vars = c("typology_class_2", "typology_fine"),
   from = "dating_typology_start",
   to = "dating_typology_end"
 )
@@ -81,18 +81,18 @@ artefact_timeseries <- artefact_timeseries_df %>%
 p <- ggplot() +
   ggridges::geom_density_ridges(
     data = artefact_timeseries,
-    mapping = aes(x = date, y = typology_fine, height = sum, fill = typology_class_3),
+    mapping = aes(x = date, y = typology_fine, height = sum, fill = typology_class_2),
     stat = "identity",
     alpha = 0.5
   ) +
   geom_point(
     data = typology_fine_centers,
-    mapping = aes(x = date, y = typology_fine, color = typology_class_3),
+    mapping = aes(x = date, y = typology_fine, color = typology_class_2),
     size = 3
   ) +
   geom_point(
     data = typology_fine_centers,
-    mapping = aes(x = -770, y = typology_fine, color = typology_class_3),
+    mapping = aes(x = -770, y = typology_fine, color = typology_class_2),
     size = 5
   ) +
   geom_text(
@@ -115,7 +115,7 @@ p <- ggplot() +
   xlab("Year BC")
 
 ggsave(
-  filename = "05_typology_class_3+4_time_series.png",
+  filename = "05_typology_class_2+3_time_series.png",
   plot = p,
   device = "png",
   path = "plots",
