@@ -4,8 +4,13 @@ library(ggplot2)
 load("data/weapons.RData")
 artefacts <- weapons %>%
   dplyr::mutate(
-    typology_fine = ifelse(!is.na(typology_class_3), paste0(typology_class_2, "+", typology_class_3), typology_class_2)
+    typology_fine = ifelse(
+      !is.na(typology_class_3), stringr::str_trunc(paste0(typology_class_2, " ~ ", typology_class_3), 40), typology_class_2
+    )
   )
+
+# artefact_timeseries_df$typology_fine <- gsub("+", "\n", artefact_timeseries_df$typology_fine)
+# levels(artefact_timeseries_df$typology_fine) <- gsub("+", "\n", levels(artefact_timeseries_df$typology_fine))
 
 artefacts <- artefacts %>% 
   dplyr::group_by(
@@ -24,7 +29,8 @@ type_fine_amount <- artefacts %>%
     typology_fine
   ) %>%
   dplyr::summarise(
-    n = dplyr::n()
+    n = dplyr::n(),
+    typology_class_2 = dplyr::first(typology_class_2)
   )
 
 artefact_timeseries_df <- aoristAAR::aorist(
@@ -90,26 +96,22 @@ p <- ggplot() +
     mapping = aes(x = date, y = typology_fine, color = typology_class_2),
     size = 3
   ) +
-  geom_point(
-    data = typology_fine_centers,
-    mapping = aes(x = -770, y = typology_fine, color = typology_class_2),
-    size = 5
-  ) +
-  geom_text(
+  geom_label(
     data = type_fine_amount,
-    mapping = aes(x = -800, y = typology_fine, label = n),
-    size = 6
+    mapping = aes(x = -800, y = typology_fine, label = n, fill = typology_class_2),
+    size = 5,
+    color = "white"
   ) +
   theme_bw() +
   theme(
     axis.text.x = element_text(size = 17),
-    axis.text.y = element_text(size = 15),
+    axis.text.y = element_text(size = 15, hjust = 0),
     axis.title.x = element_text(size = 17),
     legend.text = element_text(size = 15),
     legend.position = "bottom",
     legend.direction = "horizontal"
   ) +
-  guides(fill = guide_legend("", nrow = 4), color = guide_legend("", nrow = 4)) +
+  guides(fill = guide_legend("", nrow = 5), color = guide_legend("", nrow = 5)) +
   xlim(-800, -400) +
   ylab("") +
   xlab("Year BC")
@@ -120,7 +122,7 @@ ggsave(
   device = "png",
   path = "plots",
   width = 300,
-  height = 500,
+  height = 600,
   units = "mm",
   dpi = 300
 )
