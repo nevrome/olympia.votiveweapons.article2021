@@ -41,29 +41,29 @@ p <- type_count %>%
     aes(x = typology_class_2, y = n, fill = dated),
     stat = "identity"
   ) +
-  geom_text(
+  geom_label(
     data = general_count,
-    aes(x = typology_class_2, y = n, label = n), 
-    position = position_dodge(width = 0.9), 
-    hjust = -0.25,
-    size = 2.5,
-    angle = 90
+    aes(x = typology_class_2, y = -100, label = n),
+    size = 3,
+    fill = "darkgrey",
+    color = "white"
   ) +
   scale_fill_manual(
     values = c("grey", "black")
   ) +
   theme_bw() +
   theme(
-    legend.position = c(0.01, 0.99),
-    legend.justification = c(0, 1),
+    legend.position = c(0.95, 0.11),
+    legend.justification = c(1, 1),
     legend.title = element_blank(),
-    legend.text = element_text(size = 8),
-    axis.text.y = element_text(size = 8),
-    axis.text.x = element_text(angle = 45, hjust = 1, size = 7)
+    legend.text = element_text(size = 10),
+    axis.text.y = element_text(size = 10, hjust = 0),
+    axis.text.x = element_text(size = 10)
   ) +
   xlab("") +
   ylab("Amount of artefacts") +
-  ylim(0, max(general_count$n) + 200)
+  ylim(-140, max(general_count$n)) +
+  coord_flip()
 
 ggsave(
   filename = "04_typology_class_2_distribution.png",
@@ -71,7 +71,7 @@ ggsave(
   device = "png",
   path = "plots",
   width = 150,
-  height = 100,
+  height = 180,
   units = "mm",
   dpi = 300
 )
