@@ -96,22 +96,19 @@ p <- ggplot() +
     data = find_area_centers,
     mapping = aes(x = date, y = find_area)
   ) +
-  geom_point(
+  geom_label(
     data = area_amount,
-    mapping = aes(x = -1000, y = find_area),
-    size = 8,
-    color = "grey"
-  ) +
-  geom_text(
-    data = area_amount,
-    mapping = aes(x = -1000, y = find_area, label = n),
-    size = 3
+    mapping = aes(x = -800, y = find_area, label = n),
+    size = 5,
+    fill = "darkgrey",
+    color = "white"
   ) +
   theme_bw() +
   theme(
-    axis.text = element_text(size = 10)
+    axis.text = element_text(size = 15),
+    axis.text.y = element_text(hjust = 0)
   ) +
-  xlim(-1000, -400) +
+  xlim(-800, -400) +
   xlab("Year BC") +
   ylab("")
   
