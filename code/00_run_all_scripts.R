@@ -1,0 +1,11 @@
+code_files_raw <- list.files("code", full.names = TRUE)
+code_files <- code_files_raw[!grepl("00|99", code_files_raw)]
+
+purrr::walk(
+  code_files,
+  function(y) {
+    message("\n###### ", y, " ######\n")
+    source(y)
+    rm(list = ls())
+  }
+)
