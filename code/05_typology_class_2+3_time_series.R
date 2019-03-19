@@ -1,5 +1,6 @@
 library(magrittr)
 library(ggplot2)
+library(viridis)
 
 load("data/weapons.RData")
 artefacts <- weapons %>%
@@ -114,7 +115,21 @@ p <- ggplot() +
   guides(fill = guide_legend("", nrow = 5), color = guide_legend("", nrow = 5)) +
   xlim(-800, -400) +
   ylab("") +
-  xlab("Year BC")
+  xlab("Year BC") +
+  scale_fill_manual(
+    values = wesanderson::wes_palette(
+      "Zissou1", 
+      n = length(unique(artefact_timeseries$typology_class_2)), 
+      type = "continuous"
+    )
+  ) +
+  scale_color_manual(
+    values = wesanderson::wes_palette(
+      "Zissou1", 
+      n = length(unique(artefact_timeseries$typology_class_2)), 
+      type = "continuous"
+    )
+  )
 
 ggsave(
   filename = "05_typology_class_2+3_time_series.png",

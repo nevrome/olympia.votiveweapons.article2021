@@ -61,7 +61,7 @@ p <- type_count %>%
     axis.text.x = element_text(size = 10)
   ) +
   xlab("") +
-  ylab("Amount of artefacts") +
+  ylab("Number of artefacts") +
   ylim(-140, max(general_count$n)) +
   coord_flip()
 

@@ -39,6 +39,8 @@ artefact_number_timesteps_sf <- artefact_number_timesteps %>%
   ) %>%
   sf::st_as_sf()
 
+artefact_number_timesteps_sf$sum[artefact_number_timesteps_sf$sum == 0] <- NA
+
 #### plot ####
 
 p <- ggplot() +
@@ -51,10 +53,11 @@ p <- ggplot() +
     ylim = c(4165620, 4166150),
     datum = sf::st_crs(25834)
   ) +
-  scale_fill_gradient2(
-    low = "white", mid = "orange", high = "darkred", 
-    guide = "colorbar", na.value = "lightgrey",
-    midpoint = mean(range(artefact_number_timesteps_sf$sum, na.rm = TRUE))
+  scale_fill_gradientn(
+    colours = wesanderson::wes_palette(
+      "Zissou1", 
+      type = "continuous"
+    )
   ) +
   facet_wrap(
     ~date
@@ -72,6 +75,9 @@ p <- ggplot() +
     legend.text = element_text(size = 13),
     strip.text = element_text(size = 15),
     strip.background = element_rect(fill = NA)
+  ) +
+  guides(
+    fill = guide_colorbar(title = "Number of artefacts")
   )
 
 ggsave(
@@ -79,8 +85,8 @@ ggsave(
   plot = p,
   device = "png",
   path = "plots/",
-  width = 400,
-  height = 400,
+  width = 350,
+  height = 300,
   units = "mm",
   dpi = 300
 )

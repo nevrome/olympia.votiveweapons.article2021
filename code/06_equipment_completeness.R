@@ -133,7 +133,7 @@ p <- ggplot(equip_count) +
     axis.title.x = element_text(size = 10)
   ) +
   xlab("") +
-  ylab("Amount of artefacts") +
+  ylab("Number of artefacts") +
   coord_flip()
 
 ggsave(

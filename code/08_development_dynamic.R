@@ -1,6 +1,8 @@
 library(magrittr)
 library(ggplot2)
 
+wescolors <- wesanderson::wes_palette("Zissou1", 5)
+
 load("data/weapons.RData")
 
 #### weapons time series ####
@@ -34,7 +36,7 @@ weapons_timeseries <- dplyr::full_join(weapons_timeseries_number, weapons_timese
 A <- ggplot(weapons_timeseries, aes(x = date)) +
   geom_hline(
     yintercept = 0,
-    color = "blue",
+    color = "darkgrey",
     linetype = 3
   ) +
   geom_line(
@@ -53,7 +55,7 @@ A <- ggplot(weapons_timeseries, aes(x = date)) +
     sec.axis = sec_axis(~./(max(weapons_timeseries_number$number) / max(weapons_timeseries_weight$weight)), name = "Artefact weight")
   ) +
   scale_colour_manual(
-    values = c("black", "orange")
+    values = c("black", wescolors[1])
   ) +
   theme_bw() +
   xlab("Year BC") +
@@ -62,9 +64,9 @@ A <- ggplot(weapons_timeseries, aes(x = date)) +
     legend.justification = c(0, 1),
     legend.title = element_blank(),
     axis.title.y.left = element_text(color = "black"),
-    axis.title.y.right = element_text(color = "orange"),
+    axis.title.y.right = element_text(color = wescolors[1]),
     axis.text.y.left = element_text(color = "black"),
-    axis.text.y.right = element_text(color = "orange")
+    axis.text.y.right = element_text(color = wescolors[1])
   )
 
   
@@ -106,7 +108,7 @@ spline <- tibble::tibble(
 B <- ggplot() +
   geom_hline(
     yintercept = 0,
-    color = "blue",
+    color = "darkgrey",
     linetype = 3
   ) +
   geom_line(
@@ -128,7 +130,7 @@ B <- ggplot() +
     legend.title = element_blank()
   ) +
   scale_color_manual(
-    values = "red"
+    values = wescolors[3]
   )
 
 #### derivative ####
@@ -143,7 +145,7 @@ deri <- tibble::tibble(
 C <- ggplot(deri) +
   geom_hline(
     yintercept = 0,
-    color = "blue",
+    color = "darkgrey",
     linetype = 3
   ) +
   geom_line(
@@ -160,7 +162,7 @@ C <- ggplot(deri) +
     legend.title = element_blank()
   ) +
   scale_color_manual(
-    values = "darkgreen"
+    values = wescolors[5]
   ) 
 
 #### cultural distance from one timestep to the next ####
@@ -203,7 +205,7 @@ distance <- tibble::tibble(
 D <- ggplot() +
   geom_hline(
     yintercept = 0,
-    color = "blue",
+    color = "darkgrey",
     linetype = 3
   ) +
   geom_rect(
@@ -220,7 +222,12 @@ D <- ggplot() +
     data = distance %>% dplyr::filter(ed != 0),
     aes(x = mean, y = ed)
   ) +
-  scale_fill_gradient2(low = "lightgrey", mid = "yellow", high = "red", midpoint = mean(range(distance$ed))) +
+  scale_fill_gradientn(
+    colours = wesanderson::wes_palette(
+      "Zissou1", 
+      type = "continuous"
+    )
+  ) +
   scale_size(range = c(0.3, 2), guide = FALSE) +
   scale_x_continuous(breaks = seq(-1000, -400, 100), limits = c(-1000, -400)) +
   ylim(0, max(distance$ed)) +
@@ -234,7 +241,7 @@ D <- ggplot() +
     legend.background = element_rect(fill = "white")
   ) +
   ylab("Euclidean distance") +
-  xlab("Time") +
+  xlab("Year BC") +
   guides(
     fill = guide_colorbar(
       title = "",
