@@ -137,7 +137,7 @@ p <- ggplot(equip_count) +
   coord_flip()
 
 ggsave(
-  filename = "06_equipment_completeness.png",
+  filename = "04_equipment_completeness.png",
   plot = p,
   device = "png",
   path = "plots",

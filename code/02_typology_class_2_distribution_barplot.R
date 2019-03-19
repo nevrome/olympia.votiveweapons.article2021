@@ -66,7 +66,7 @@ p <- type_count %>%
   coord_flip()
 
 ggsave(
-  filename = "04_typology_class_2_distribution.png",
+  filename = "02_typology_class_2_distribution.png",
   plot = p,
   device = "png",
   path = "plots",

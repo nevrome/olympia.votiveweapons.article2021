@@ -114,7 +114,7 @@ p <- ggplot() +
   ylab("")
   
 ggsave(
-  filename = "03_find_area_time_series.png",
+  filename = "05_find_area_time_series.png",
   plot = p,
   device = "png",
   path = "plots",
