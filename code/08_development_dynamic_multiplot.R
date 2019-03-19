@@ -39,8 +39,13 @@ A <- ggplot(weapons_timeseries, aes(x = date)) +
     color = "darkgrey",
     linetype = 3
   ) +
+  geom_vline(
+    xintercept = c(-1000, -400),
+    color = "darkgrey",
+    linetype = 3
+  ) +
   geom_line(
-    mapping = aes(y = number, colour = "Amount of artefacts")
+    mapping = aes(y = number, colour = "Artefact number")
   ) +
   geom_line(
     mapping = aes(y = weight * (max(weapons_timeseries_number$number) / max(weapons_timeseries_weight$weight)), colour = "Corrected artefact weight"),
@@ -51,11 +56,11 @@ A <- ggplot(weapons_timeseries, aes(x = date)) +
     breaks = seq(-1000, -400, 100), limits = c(-1000, -400)
   ) +
   scale_y_continuous(
-    name = "Artefact amount",
+    name = "Artefact number",
     sec.axis = sec_axis(~./(max(weapons_timeseries_number$number) / max(weapons_timeseries_weight$weight)), name = "Artefact weight")
   ) +
   scale_colour_manual(
-    values = c("black", wescolors[1])
+    values = c("black", wescolors[5])
   ) +
   theme_bw() +
   xlab("Year BC") +
@@ -64,9 +69,9 @@ A <- ggplot(weapons_timeseries, aes(x = date)) +
     legend.justification = c(0, 1),
     legend.title = element_blank(),
     axis.title.y.left = element_text(color = "black"),
-    axis.title.y.right = element_text(color = wescolors[1]),
+    axis.title.y.right = element_text(color = wescolors[5]),
     axis.text.y.left = element_text(color = "black"),
-    axis.text.y.right = element_text(color = wescolors[1])
+    axis.text.y.right = element_text(color = wescolors[5])
   )
 
   
@@ -104,6 +109,9 @@ spline <- tibble::tibble(
   pred = prediction_spline$y
 )
 
+classes_timeseries$name <- "Artefact classes number"
+spline$name <- "Cubic smoothing spline (spar = 0.5)"
+
 #### Plot B: number of classes per year + spline ####
 B <- ggplot() +
   geom_hline(
@@ -111,18 +119,22 @@ B <- ggplot() +
     color = "darkgrey",
     linetype = 3
   ) +
+  geom_vline(
+    xintercept = c(-1000, -400),
+    color = "darkgrey",
+    linetype = 3
+  ) +
   geom_line(
     data = classes_timeseries,
-    mapping = aes(x = date, y = sum)
+    mapping = aes(x = date, y = sum, color = name, size = name)
   ) +
   geom_line(
     data = spline,
-    mapping = aes(x = date, y = pred, color = "Cubic smoothing spline (spar = 0.5)"),
-    size = 1.3
+    mapping = aes(x = date, y = pred, color = name, size = name)
   ) +
   scale_x_continuous(breaks = seq(-1000, -400, 100), limits = c(-1000, -400)) +
   theme_bw() +
-  ylab("Amount of classes") +
+  ylab("Classes number") +
   xlab("") +
   theme(
     legend.position = c(0.01, 0.99),
@@ -130,7 +142,10 @@ B <- ggplot() +
     legend.title = element_blank()
   ) +
   scale_color_manual(
-    values = wescolors[3]
+    values = c("black", wescolors[3])
+  ) +
+  scale_size_manual(
+    values = c(0.5, 1.3)
   )
 
 #### derivative ####
@@ -148,6 +163,11 @@ C <- ggplot(deri) +
     color = "darkgrey",
     linetype = 3
   ) +
+  geom_vline(
+    xintercept = c(-1000, -400),
+    color = "darkgrey",
+    linetype = 3
+  ) +
   geom_line(
     mapping = aes(x = date, y = deriv, color = "First derivative of spline"),
     size = 1.3
@@ -162,7 +182,7 @@ C <- ggplot(deri) +
     legend.title = element_blank()
   ) +
   scale_color_manual(
-    values = wescolors[5]
+    values = wescolors[1]
   ) 
 
 #### cultural distance from one timestep to the next ####
@@ -205,6 +225,11 @@ distance <- tibble::tibble(
 D <- ggplot() +
   geom_hline(
     yintercept = 0,
+    color = "darkgrey",
+    linetype = 3
+  ) +
+  geom_vline(
+    xintercept = c(-1000, -400),
     color = "darkgrey",
     linetype = 3
   ) +
