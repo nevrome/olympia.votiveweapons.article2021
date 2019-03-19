@@ -49,7 +49,7 @@ p <- type_count %>%
     color = "white"
   ) +
   scale_fill_manual(
-    values = c("grey", "black")
+    values = c("darkgrey", "black")
   ) +
   theme_bw() +
   theme(

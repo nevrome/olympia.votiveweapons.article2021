@@ -86,6 +86,11 @@ equip_count <- equip_count %>%
     )
   )
 
+equip_count$equipment_type <- factor(
+  equip_count$equipment_type, 
+  levels = unique(equip_count$equipment_type[order(equip_count$n)])
+)
+
 p <- ggplot(equip_count) +
   geom_bar(
     aes(
@@ -93,7 +98,7 @@ p <- ggplot(equip_count) +
       y = n
     ),
     stat = "identity",
-    fill = "black"
+    fill = "darkgrey"
   ) +
   geom_errorbar(
     aes(
@@ -101,7 +106,7 @@ p <- ggplot(equip_count) +
       ymin = exp_min,
       ymax = exp_max
     ),
-    color = "red",
+    color = "black",
     width = 0.3
   ) +
   geom_point(
@@ -109,11 +114,27 @@ p <- ggplot(equip_count) +
       x = equipment_type,
       y = exp_mean
     ),
-    color = "red"
+    color = "black"
   ) +
+  geom_label(
+    aes(
+      x = equipment_type,
+      y = -110,
+      label = n
+    ),
+    size = 2.5,
+    fill = "darkgrey",
+    color = "white"
+  ) +
+  ylim(-130, max(equip_count$exp_max)) +
   theme_bw() +
+  theme(
+    axis.text.y = element_text(hjust = 0, size = 10),
+    axis.title.x = element_text(size = 10)
+  ) +
   xlab("") +
-  ylab("Amount of artefacts")
+  ylab("Amount of artefacts") +
+  coord_flip()
 
 ggsave(
   filename = "06_equipment_completeness.png",

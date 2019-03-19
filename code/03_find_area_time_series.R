@@ -90,7 +90,8 @@ p <- ggplot() +
     data = artefact_timeseries,
     mapping = aes(x = date, y = find_area, height = roll_sum),
     stat = "identity",
-    alpha = 0.5
+    alpha = 0.5,
+    fill = "darkgrey"
   ) +
   geom_point(
     data = find_area_centers,
