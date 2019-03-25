@@ -68,9 +68,7 @@ A <- ggplot(weapons_timeseries, aes(x = date)) +
     legend.position = c(0.01, 0.99),
     legend.justification = c(0, 1),
     legend.title = element_blank(),
-    axis.title.y.left = element_text(color = "black"),
     axis.title.y.right = element_text(color = wescolors[5]),
-    axis.text.y.left = element_text(color = "black"),
     axis.text.y.right = element_text(color = wescolors[5])
   )
 
