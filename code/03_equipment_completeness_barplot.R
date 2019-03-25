@@ -1,6 +1,8 @@
 library(magrittr)
 library(ggplot2)
 
+wescolors <- wesanderson::wes_palette("Zissou1", 5)
+
 load("data/weapons_unfiltered.RData")
 artefacts <- weapons_unfiltered
 
@@ -35,7 +37,7 @@ equip_artefacts <- artefacts %>%
 
 equip_count_general <- equip_artefacts %>%
   dplyr::group_by(
-    equipment_type
+    equipment_type, cuisse_orientation
   ) %>%
   dplyr::tally() %>%
   dplyr::ungroup() %>%
@@ -95,10 +97,10 @@ p <- ggplot(equip_count) +
   geom_bar(
     aes(
       x = equipment_type,
-      y = n
+      y = n,
+      fill = forcats::fct_rev(cuisse_orientation)
     ),
-    stat = "identity",
-    fill = "darkgrey"
+    stat = "identity"
   ) +
   geom_errorbar(
     aes(
@@ -117,6 +119,11 @@ p <- ggplot(equip_count) +
     color = "black"
   ) +
   geom_label(
+    data = equip_count %>% 
+      dplyr::group_by(equipment_type) %>% 
+      dplyr::summarise(
+        n = sum(n)
+      ),
     aes(
       x = equipment_type,
       y = -110,
@@ -126,15 +133,24 @@ p <- ggplot(equip_count) +
     fill = "darkgrey",
     color = "white"
   ) +
-  ylim(-130, max(equip_count$exp_max)) +
   theme_bw() +
   theme(
     axis.text.y = element_text(hjust = 0, size = 10),
-    axis.title.x = element_text(size = 10)
+    axis.title.x = element_text(size = 10),
+    legend.position = "bottom"
   ) +
   xlab("") +
   ylab("Number of artefacts") +
-  coord_flip()
+  coord_flip(
+    ylim = c(-130, 1250)
+  ) +
+  scale_fill_manual(
+    limits = c("left", "right"),
+    values = wescolors[c(2,4)],
+    name = "Orientation",
+    na.value = "darkgrey"
+  )
+  
 
 ggsave(
   filename = "03_equipment_completeness.png",

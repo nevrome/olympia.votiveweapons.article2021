@@ -29,7 +29,8 @@ olympia_artefacts_1 <- olympia_artefacts_0 %>%
     find_area = "Herkunft_Lokal_Gebiet",
     typology_class_1 = "Klassifizierung_ObjektartAllgemein",
     typology_class_2 = "KurzbeschreibungMetall",
-    typology_class_3 = "Material_Farbe"
+    typology_class_3 = "Material_Farbe",
+    description = "Beschreibung"
   )
 
 #### remove (rows and columns) artefacts and variables with no information ####
@@ -102,6 +103,16 @@ olympia_artefacts_3$find_area[grep("und|oder|\\?|\\,", olympia_artefacts_3$find_
 # simplification Southern Stadium area
 olympia_artefacts_3$find_area[olympia_artefacts_3$find_area %in% c("Stadion-Südwest", "Stadion-Südwestecke")] <- "Stadion-West"
 
+# cuisse orientation (for cuisses)
+olympia_artefacts_3 %<>%
+  dplyr::mutate(
+    cuisse_orientation = dplyr::case_when(
+      typology_class_2 == "Beinschiene" & grepl("Links", description) ~ "left",
+      typology_class_2 == "Beinschiene" & grepl("Rechts", description) ~ "right",
+      TRUE ~ NA_character_
+    )
+  )
+
 #### finalize data types ####
 
 # factors
@@ -109,7 +120,8 @@ olympia_artefacts_3 %<>%
   dplyr::mutate_at(
     .vars = dplyr::vars(
       tidyselect::one_of(
-        "find_area"
+        "find_area",
+        "cuisse_orientation"
       ),
       tidyselect::starts_with(
         "typology_class"
