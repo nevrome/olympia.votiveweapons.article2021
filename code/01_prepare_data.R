@@ -29,8 +29,7 @@ olympia_artefacts_1 <- olympia_artefacts_0 %>%
     find_area = "Herkunft_Lokal_Gebiet",
     typology_class_1 = "Klassifizierung_ObjektartAllgemein",
     typology_class_2 = "KurzbeschreibungMetall",
-    typology_class_3 = "Material_Farbe",
-    modification_classes = "Beschreibung_Zustand"
+    typology_class_3 = "Material_Farbe"
   )
 
 #### remove (rows and columns) artefacts and variables with no information ####
@@ -43,17 +42,6 @@ olympia_artefacts_3 <- olympia_artefacts_2
 # small typology reordering
 # weapons_ident <- olympia_artefacts_3$typology_class_2 == "Waffen" & !is.na(olympia_artefacts_3$typology_class_2)
 # olympia_artefacts_3$typology_class_2[weapons_ident] <- olympia_artefacts_3$typology_class_2[weapons_ident]
-
-# modification
-olympia_artefacts_3 %<>%
-  dplyr::mutate(
-    modification_classes = lapply(
-      olympia_artefacts_3$modification_classes,
-      function(x) {
-        strsplit(x, "\n") %>% unlist()
-      }
-    )
-  )
 
 # dating
 source("code/99_dating_preparation_helper_functions.R")
