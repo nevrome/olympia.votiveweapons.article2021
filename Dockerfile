@@ -14,4 +14,4 @@ COPY ./data/ ./data/
 
 RUN mkdir plots
 
-RUN find . -type df -exec chmod 777 {} \;
+RUN find . -type d,f -exec chmod 777 {} \;
