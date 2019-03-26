@@ -1,5 +1,5 @@
 code_files_raw <- list.files("code", full.names = TRUE)
-code_files <- code_files_raw[!grepl("00|99", code_files_raw)]
+code_files <- code_files_raw[!grepl("00|01|99", code_files_raw)]
 
 purrr::walk(
   code_files,

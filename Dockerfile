@@ -11,6 +11,7 @@ RUN R -e "devtools::install('.', dep = TRUE)"
 
 COPY ./code/ ./code/
 COPY ./data/ ./data/
-COPY ./plots/ ./plots/
 
-RUN find . -type d -exec chmod 777 {} \;
+RUN mkdir plots
+
+RUN find . -type df -exec chmod 777 {} \;
