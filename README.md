@@ -65,11 +65,10 @@ available). At the Docker prompt, you can load and run the image with:
 
 This will start a server instance of RStudio. Then open your web browser
 at localhost:8787 or run `docker-machine ip default` in the shell to
-find the correct IP address, and log in with
-rstudio/olympiavotiveweapons19. Once logged in, use the Files pane
-(bottom right) to navigate to the script files. More information about
-using RStudio in Docker is available at the
-[Rocker](https://github.com/rocker-org)
+find the correct IP address, and log in with **rstudio/olympia**. Once
+logged in, use the Files pane (bottom right) to navigate to the script
+files. More information about using RStudio in Docker is available at
+the [Rocker](https://github.com/rocker-org)
 [wiki](https://github.com/rocker-org/rocker/wiki/Using-the-RStudio-image)
 pages.
 

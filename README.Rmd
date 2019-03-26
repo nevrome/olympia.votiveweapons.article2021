@@ -52,7 +52,7 @@ A Docker image is a lightweight GNU/Linux virtual computer that can be run as a 
     docker load -i olympiavotiveweapons19_docker_image.tar
     docker run -e PASSWORD=olympia -dp 8787:8787 --name olympiavotiveweapons19 olympiavotiveweapons19
 
-This will start a server instance of RStudio. Then open your web browser at localhost:8787 or run `docker-machine ip default` in the shell to find the correct IP address, and log in with rstudio/olympiavotiveweapons19. Once logged in, use the Files pane (bottom right) to navigate to the script files. More information about using RStudio in Docker is available at the [Rocker](https://github.com/rocker-org) [wiki](https://github.com/rocker-org/rocker/wiki/Using-the-RStudio-image) pages.
+This will start a server instance of RStudio. Then open your web browser at localhost:8787 or run `docker-machine ip default` in the shell to find the correct IP address, and log in with **rstudio/olympia**. Once logged in, use the Files pane (bottom right) to navigate to the script files. More information about using RStudio in Docker is available at the [Rocker](https://github.com/rocker-org) [wiki](https://github.com/rocker-org/rocker/wiki/Using-the-RStudio-image) pages.
 
 We developed and tested the package on this Docker container, so this is the only platform that we’re confident it works on. It was built and stored with:
 
