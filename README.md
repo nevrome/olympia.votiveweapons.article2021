@@ -1,5 +1,5 @@
 <!-- README.md is generated from README.Rmd. Please edit that file -->
-![Last-changedate](https://img.shields.io/badge/last%20change-2019--03--26-brightgreen.svg)\](<https://github.com/nevrome/olympia.votiveweapons.article2019/commits/master>)
+[![Last-changedate](https://img.shields.io/badge/last%20change-2019--03--26-brightgreen.svg)](https://github.com/nevrome/olympia.votiveweapons.article2019/commits/master)
 [![minimal R
 version](https://img.shields.io/badge/R%3E%3D-3.5.0-brightgreen.svg)](https://cran.r-project.org/)
 [![Licence](https://img.shields.io/github/license/mashape/apistatus.svg)](http://choosealicense.com/licenses/mit/)
@@ -23,7 +23,7 @@ Clemens Schmid (<clemens@nevrome.de>)
 
 ### Published in:
 
-Graells R., Schmid C., ...
+Graells R., Schmid C., ... Workingtitle 2019
 
 ### Abstract:
 
@@ -37,7 +37,7 @@ Olympia, Bronze Age, ...
 
 This repository contains the directories `code` and `data` to reproduce
 the preparations, calculations and figure renderings in this paper. The
-`plots` directory contains readily versions of the rendered plots.
+`plots` directory contains readily rendered versions of the plots.
 
 ### How to reproduce:
 
