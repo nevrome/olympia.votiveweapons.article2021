@@ -210,12 +210,9 @@ p <- ggplot(equip_count) +
   ) +
   scale_fill_manual(
     limits = c("left", "right"),
-    values = wescolors[c(2,4)],
+    values = wescolors[c(1,4)],
     name = "Orientation",
     na.value = "darkgrey"
-  ) +
-  scale_color_manual(
-    values = wescolors[1:6]
   )
   
 ggsave(

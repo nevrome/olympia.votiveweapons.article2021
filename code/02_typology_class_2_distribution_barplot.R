@@ -59,7 +59,7 @@ p <- type_count %>%
     color = "white"
   ) +
   scale_fill_manual(
-    values = c("darkgrey", wescolors[c(3,1)])
+    values = c("darkgrey", wescolors[c(4,1)])
   ) +
   theme_bw() +
   theme(
