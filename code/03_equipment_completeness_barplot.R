@@ -54,12 +54,23 @@ equip_artefacts$equipment_type <- factor(
   ) %>% rev
 )
 
-equip_count_general <- equip_artefacts %>%
-  dplyr::group_by(
-    equipment_type, cuisse_orientation
-  ) %>%
-  dplyr::tally() %>%
-  dplyr::ungroup() %>%
+# temporal distribution
+equip_time <- aoristAAR::aorist(
+  equip_artefacts, 
+  from = "dating_typology_start", 
+  to = "dating_typology_end", 
+  split_vars = c("equipment_type", "cuisse_orientation"),
+  stepstart = -1000,
+  stepstop = -400,
+  method = "number"
+)
+
+equip_time_red <- equip_time %>%
+  dplyr::filter(
+    date %in% seq(-800, -400, 50)
+  ) 
+
+equip_time_red_sd <- equip_time_red %>%
   dplyr::mutate(
     type = dplyr::case_when(
       "Helm" == equipment_type ~ "single",
@@ -75,17 +86,21 @@ equip_count_general <- equip_artefacts %>%
     )
   ) 
 
-single <- equip_count_general %>%
+single <- equip_time_red_sd %>%
   dplyr::filter(
     type == "single"
   ) %>%
+  dplyr::group_by(
+    date
+  ) %>%
   dplyr::mutate(
-    exp_min = min(n),
-    exp_mean = mean(n),
-    exp_max = max(n)
-  )
+    exp_min = min(sum),
+    exp_mean = mean(sum),
+    exp_max = max(sum)
+  ) %>%
+  dplyr::ungroup()
 
-double <- equip_count_general %>%
+double <- equip_time_red_sd %>%
   dplyr::filter(
     type == "double"
   ) %>%
@@ -98,6 +113,9 @@ double <- equip_count_general %>%
 equip_count <- base::rbind(single, double)
 
 equip_count <- equip_count %>%
+  dplyr::group_by(
+    date
+  ) %>%
   dplyr::mutate(
     exp_min = ifelse(
       is.na(exp_min), mean(exp_min, na.rm = T) * 2, exp_min
@@ -108,43 +126,49 @@ equip_count <- equip_count %>%
     exp_max = ifelse(
       is.na(exp_max), mean(exp_max, na.rm = T)* 2, exp_max
     )
-  )
+  ) %>%
+  dplyr::ungroup()
 
 p <- ggplot(equip_count) +
+  facet_wrap(~date) +
   geom_bar(
     aes(
       x = equipment_type,
-      y = n,
+      y = sum,
       fill = forcats::fct_rev(cuisse_orientation)
     ),
     stat = "identity"
   ) +
-  geom_errorbar(
+  # geom_errorbar(
+  #   aes(
+  #     x = equipment_type,
+  #     ymin = exp_min,
+  #     ymax = exp_max
+  #   ),
+  #   color = "black",
+  #   width = 0.2,
+  #   alpha = 0.5
+  # ) +
+  geom_hline(
     aes(
-      x = equipment_type,
-      ymin = exp_min,
-      ymax = exp_max
-    ),
-    color = "black",
-    width = 0.3
+      yintercept = exp_max,
+      color = type
+    )
   ) +
   geom_point(
     aes(
       x = equipment_type,
       y = exp_mean
     ),
-    color = "black"
+    color = "black",
+    size = 0.7
   ) +
   geom_label(
-    data = equip_count %>% 
-      dplyr::group_by(equipment_type) %>% 
-      dplyr::summarise(
-        n = sum(n)
-      ),
+    data = equip_count,
     aes(
       x = equipment_type,
       y = -110,
-      label = n
+      label = sum
     ),
     size = 2.5,
     fill = "darkgrey",
@@ -159,7 +183,7 @@ p <- ggplot(equip_count) +
   xlab("") +
   ylab("Number of artefacts") +
   coord_flip(
-    ylim = c(-130, 1250)
+    ylim = c(-150, 1000)
   ) +
   scale_fill_manual(
     limits = c("left", "right"),
@@ -174,8 +198,8 @@ ggsave(
   plot = p,
   device = "png",
   path = "plots",
-  width = 130,
-  height = 90,
+  width = 200,
+  height = 200,
   units = "mm",
   dpi = 300
 )

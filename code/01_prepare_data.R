@@ -147,7 +147,7 @@ olympia_artefacts_3 %<>%
       )
     ),
     .funs = function(x) {
-      as.factor(x)
+      as.factor(x) %>% forcats::fct_explicit_na()
     }
   )
 
