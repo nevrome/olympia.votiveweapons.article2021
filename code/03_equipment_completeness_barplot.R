@@ -54,12 +54,16 @@ equip_artefacts$equipment_type <- factor(
   ) %>% rev
 )
 
+equip_artefacts$typology_shield <- "NA"
+equip_artefacts$typology_shield[equip_artefacts$typology_class_2 == "Schild oder Schildfragment"] <- 
+  as.factor(equip_artefacts$typology_class_3[equip_artefacts$typology_class_2 == "Schild oder Schildfragment"]) 
+
 # temporal distribution
 equip_time <- aoristAAR::aorist(
   equip_artefacts, 
   from = "dating_typology_start", 
   to = "dating_typology_end", 
-  split_vars = c("equipment_type", "cuisse_orientation"),
+  split_vars = c("equipment_type", "cuisse_orientation", "typology_shield"),
   stepstart = -1000,
   stepstop = -400,
   method = "number"
@@ -129,30 +133,22 @@ equip_count <- equip_count %>%
   ) %>%
   dplyr::ungroup()
 
+# plot
 p <- ggplot(equip_count) +
   facet_wrap(~date) +
   geom_bar(
     aes(
       x = equipment_type,
       y = sum,
-      fill = forcats::fct_rev(cuisse_orientation)
+      fill = forcats::fct_rev(cuisse_orientation),
+      color = typology_shield 
     ),
     stat = "identity"
   ) +
-  # geom_errorbar(
-  #   aes(
-  #     x = equipment_type,
-  #     ymin = exp_min,
-  #     ymax = exp_max
-  #   ),
-  #   color = "black",
-  #   width = 0.2,
-  #   alpha = 0.5
-  # ) +
   geom_hline(
     aes(
       yintercept = exp_max,
-      color = type
+      linetype = type
     )
   ) +
   geom_point(
@@ -164,7 +160,13 @@ p <- ggplot(equip_count) +
     size = 0.7
   ) +
   geom_label(
-    data = equip_count,
+    data = equip_count %>%
+      dplyr::group_by(
+        date, equipment_type
+      ) %>%
+      dplyr::summarise(
+        sum = sum(sum)
+      ),
     aes(
       x = equipment_type,
       y = -110,
@@ -190,6 +192,9 @@ p <- ggplot(equip_count) +
     values = wescolors[c(2,4)],
     name = "Orientation",
     na.value = "darkgrey"
+  ) +
+  scale_color_manual(
+    values = wescolors[1:6]
   )
   
 
