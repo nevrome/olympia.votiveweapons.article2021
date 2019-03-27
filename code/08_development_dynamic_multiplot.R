@@ -75,10 +75,10 @@ A <- ggplot(weapons_timeseries, aes(x = date)) +
   
 #### artefact classes ####
 artefacts <- weapons %>% dplyr::filter(
-  !is.na(typology_class_1), !is.na(typology_class_2), !is.na(typology_class_3)
+  !is.na(typology_class_1), !is.na(typology_class_2), !is.na(typology_class_3), !is.na(typology_class_4)
 ) %>%
   dplyr::mutate(
-    typology = paste(typology_class_1, typology_class_2, typology_class_3, sep = "_")
+    typology = paste(typology_class_1, typology_class_2, typology_class_3, typology_class_4, sep = "_")
   )
 
 classes <- artefacts %>%

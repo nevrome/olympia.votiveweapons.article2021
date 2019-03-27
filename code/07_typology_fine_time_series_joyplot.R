@@ -6,7 +6,7 @@ load("data/weapons.RData")
 artefacts <- weapons %>%
   dplyr::mutate(
     typology_fine = ifelse(
-      !is.na(typology_class_3), stringr::str_trunc(paste0(typology_class_2, " ~ ", typology_class_3), 40), typology_class_2
+      !is.na(typology_class_4), stringr::str_trunc(paste0(typology_class_2, " ~ ", typology_class_4), 40), as.character(typology_class_2)
     )
   )
 
@@ -21,7 +21,7 @@ artefacts <- artefacts %>%
     n = dplyr::n()
   ) %>%
   dplyr::filter(
-    n >= 5
+    n >= 10
   ) %>%
   dplyr::ungroup()
 
@@ -112,7 +112,7 @@ p <- ggplot() +
     legend.position = "bottom",
     legend.direction = "horizontal"
   ) +
-  guides(fill = guide_legend("", nrow = 5), color = guide_legend("", nrow = 5)) +
+  guides(fill = guide_legend("", nrow = 6), color = guide_legend("", nrow = 6)) +
   xlim(-800, -400) +
   ylab("") +
   xlab("Year BC") +
@@ -132,12 +132,12 @@ p <- ggplot() +
   )
 
 ggsave(
-  filename = "07_typology_class_2+3_time_series.png",
+  filename = "07_typology_fine_time_series.png",
   plot = p,
   device = "png",
   path = "plots",
   width = 300,
-  height = 600,
+  height = 620,
   units = "mm",
   dpi = 300
 )

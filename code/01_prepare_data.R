@@ -2,7 +2,7 @@ library(magrittr)
 
 #### read raw database export ####
 olympia_artefacts_0 <- readr::read_csv(
-  "data/2019-03-15_Olympia_DB.csv",
+  "data/2019-03-27_Olympia_DB.csv",
   na = c("NA", "-1", ""),
   col_types = readr::cols(
     `Datierung_Metall::AnfDatJh` = readr::col_integer(),
@@ -29,7 +29,8 @@ olympia_artefacts_1 <- olympia_artefacts_0 %>%
     find_area = "Herkunft_Lokal_Gebiet",
     typology_class_1 = "Klassifizierung_ObjektartAllgemein",
     typology_class_2 = "KurzbeschreibungMetall",
-    typology_class_3 = "Material_Farbe",
+    typology_class_3 = "Klassifizierung_Form",
+    typology_class_4 = "Material_Farbe",
     description = "Beschreibung"
   )
 
@@ -41,8 +42,9 @@ olympia_artefacts_2 <- olympia_artefacts_1 %>%
 olympia_artefacts_3 <- olympia_artefacts_2
 
 # small typology reordering
-# weapons_ident <- olympia_artefacts_3$typology_class_2 == "Waffen" & !is.na(olympia_artefacts_3$typology_class_2)
-# olympia_artefacts_3$typology_class_2[weapons_ident] <- olympia_artefacts_3$typology_class_2[weapons_ident]
+helmet_ident <- olympia_artefacts_3$typology_class_3 == "Helm" & !is.na(olympia_artefacts_3$typology_class_3)
+olympia_artefacts_3$typology_class_3[helmet_ident] <- olympia_artefacts_3$typology_class_2[helmet_ident]
+olympia_artefacts_3$typology_class_2[helmet_ident] <- "Helm"
 
 # dating
 source("code/99_dating_preparation_helper_functions.R")
@@ -113,6 +115,23 @@ olympia_artefacts_3 %<>%
     )
   )
 
+# simplification overly complicated shield typology
+olympia_artefacts_3[
+  !is.na(olympia_artefacts_3$typology_class_3) & 
+  olympia_artefacts_3$typology_class_3 == "Silhouettenbleche",
+]$typology_class_4 <- NA_character_
+
+olympia_artefacts_3[
+  !is.na(olympia_artefacts_3$typology_class_2) &
+  !is.na(olympia_artefacts_3$typology_class_4) &
+  olympia_artefacts_3$typology_class_2 == "Schild oder Schildfragment",
+]$typology_class_4 <- olympia_artefacts_3[
+  !is.na(olympia_artefacts_3$typology_class_2) &
+    !is.na(olympia_artefacts_3$typology_class_4) &
+    olympia_artefacts_3$typology_class_2 == "Schild oder Schildfragment",
+  ]$typology_class_4 %>% substr(1,5) %>% gsub("[a-z]|[αβγδεζηθικλμνξοπρςστυφχψω]", "", .)
+
+
 #### finalize data types ####
 
 # factors
@@ -152,3 +171,4 @@ weapons <- olympia_artefacts_3 %>%
       dating_typology_end > -1000
   )
 save(weapons, file = "data/weapons.RData")
+

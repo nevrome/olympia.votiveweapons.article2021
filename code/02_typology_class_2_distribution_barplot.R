@@ -8,11 +8,16 @@ type_count <- artefacts %>%
   dplyr::filter(
     !is.na(typology_class_2)
   ) %>%
-  dplyr::mutate(
-    dated = ifelse(!is.na(dating_typology_start) & !is.na(dating_typology_end), "typological dating", "no dating information")
-  ) %>%
+  # dplyr::mutate(
+  #   dated = dplyr::case_when(
+  #     
+  #   )
+  #     
+  #     
+  #     ifelse(!is.na(dating_typology_start) & !is.na(dating_typology_end), "typological dating", "no dating information")
+  # ) %>%
   dplyr::group_by(
-    typology_class_2, dated
+    typology_class_2#, dated
   ) %>%
   dplyr::summarise(
     n = dplyr::n()
@@ -38,7 +43,7 @@ type_count$typology_class_2 <- factor(type_count$typology_class_2, levels = gene
 p <- type_count %>%
   ggplot() +
   geom_bar(
-    aes(x = typology_class_2, y = n, fill = dated),
+    aes(x = typology_class_2, y = n),#, fill = dated),
     stat = "identity"
   ) +
   geom_label(

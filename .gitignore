@@ -37,7 +37,7 @@ rsconnect/
 .Rproj.user
 
 # raw database export data
-data/2019-02-15_Olympia_DB.csv
+data/*_Olympia_DB.csv
 
 # rendered plots
 plots/*.png

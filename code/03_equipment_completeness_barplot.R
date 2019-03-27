@@ -7,33 +7,52 @@ load("data/weapons_unfiltered.RData")
 artefacts <- weapons_unfiltered
 
 artefacts %<>% 
-  tidyr::unite(
-    "typology_collection", 
-    typology_class_1, 
-    typology_class_2, 
-    typology_class_3, 
-    sep = " ", 
-    remove = FALSE
-  ) %>%
   dplyr::mutate(
     equipment_type = dplyr::case_when(
-      grepl("Helm", typology_collection) ~ "Helm",
-      grepl("Beinschiene", typology_collection) ~ "Beinschiene",
-      grepl("Armschiene", typology_collection) ~ "Armschiene",
-      grepl("Lanze|Speer|Sauroter|Stock", typology_collection) ~ "Lanze",
-      grepl("Schild", typology_collection) ~ "Schild",
-      grepl("Panzer", typology_collection) ~ "Panzer",
+      typology_class_2 == "Helm" ~ "Helm",
+      typology_class_3 %in% c(
+        "Aussenbeschläge (Nach Randornamenten)", 
+        "Schildbänder", 
+        "Armbügel und deren Ansatzplatten",
+        "Treibverzierte Bronzerundschilde",
+        "Silhouettenbleche"
+      ) ~ "Schild",
+      typology_class_2 %in% c(
+        "Bronzene Lanzenspitze",
+        "Eiserne Lanzenspitze",
+        "Eiserne Speerspitze",
+        "Bronzene Speerspitze",
+        "Stockspitzen"
+      ) ~ "Lanze oder Speer",
+      typology_class_2 == "Sauroter" ~ "Lanzenschuh",
+      typology_class_2 == "Mitra" ~ "Mitra",
+      typology_class_2 == "Panzer" ~ "Panzer",
+      typology_class_2 == "Armschiene" ~ "Armschiene",
+      typology_class_2 == "Beinschiene" ~ "Beinschiene",
+      typology_class_2 == "Knöchelpanzer" ~ "Knöchelpanzer",
       TRUE ~ NA_character_
     )
-  ) %>%
-  dplyr::select(
-    -typology_collection
   )
 
 equip_artefacts <- artefacts %>%
   dplyr::filter(
     !is.na(equipment_type) 
   )
+
+equip_artefacts$equipment_type <- factor(
+  equip_artefacts$equipment_type,
+  levels = c(
+    "Helm",
+    "Panzer",
+    "Mitra",
+    "Armschiene",
+    "Lanze oder Speer",
+    "Lanzenschuh",
+    "Schild",
+    "Beinschiene",
+    "Knöchelpanzer"
+  ) %>% rev
+)
 
 equip_count_general <- equip_artefacts %>%
   dplyr::group_by(
@@ -46,9 +65,12 @@ equip_count_general <- equip_artefacts %>%
       "Helm" == equipment_type ~ "single",
       "Beinschiene" == equipment_type ~ "double",
       "Armschiene" == equipment_type ~ "single",
-      "Lanze" == equipment_type ~ "single",
+      "Lanze oder Speer" == equipment_type ~ "single",
       "Schild" == equipment_type ~ "single",
       "Panzer" == equipment_type ~ "single",
+      "Lanzenschuh" == equipment_type ~ "single",
+      "Knöchelpanzer" == equipment_type ~ "double",
+      "Mitra" == equipment_type ~ "single",
       TRUE ~ NA_character_
     )
   ) 
@@ -87,11 +109,6 @@ equip_count <- equip_count %>%
       is.na(exp_max), mean(exp_max, na.rm = T)* 2, exp_max
     )
   )
-
-equip_count$equipment_type <- factor(
-  equip_count$equipment_type, 
-  levels = unique(equip_count$equipment_type[order(equip_count$n)])
-)
 
 p <- ggplot(equip_count) +
   geom_bar(
