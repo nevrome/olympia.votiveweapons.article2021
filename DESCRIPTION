@@ -3,6 +3,7 @@ Title: Does not matter.
 Version: 0.0.1
 Depends: R (>= 3.5.0)
 Imports:
+    aoristAAR (>= 0.1.0),
     cowplot (>= 0.9.4),
     dplyr (>= 0.8.0.1),
     forcats (>= 0.4.0),
@@ -23,3 +24,5 @@ Imports:
     viridis (>= 0.5.1),
     wesanderson (>= 0.3.6),
     zoo (>= 1.8-4)
+Remotes:
+    ISAAKiel/aoristAAR
