@@ -56,7 +56,7 @@ equip_artefacts$equipment_type <- factor(
 
 equip_artefacts$typology_shield <- "NA"
 equip_artefacts$typology_shield[equip_artefacts$typology_class_2 == "Schild oder Schildfragment"] <- 
-  as.factor(equip_artefacts$typology_class_3[equip_artefacts$typology_class_2 == "Schild oder Schildfragment"]) 
+  as.character(equip_artefacts$typology_class_3[equip_artefacts$typology_class_2 == "Schild oder Schildfragment"])
 
 # temporal distribution
 equip_time <- aoristAAR::aorist(
@@ -74,7 +74,29 @@ equip_time_red <- equip_time %>%
     date %in% seq(-800, -400, 50)
   ) 
 
-equip_time_red_sd <- equip_time_red %>%
+equip_time_red_non_shield <- equip_time_red %>% 
+  dplyr::filter(
+    equipment_type != "Schild"
+  ) %>%
+  dplyr::select(
+    date, equipment_type, cuisse_orientation, sum
+  )
+
+equip_time_red_shield <- equip_time_red %>% 
+  dplyr::filter(
+    equipment_type == "Schild"
+  ) %>%
+  dplyr::group_by(
+    date, equipment_type, cuisse_orientation
+  ) %>%
+  dplyr::summarise(
+    sum = round(max(sum), 0)
+  ) %>%
+  dplyr::ungroup()
+
+equip_time_merged <- rbind(equip_time_red_non_shield, equip_time_red_shield)
+
+equip_time_sd <- equip_time_merged %>%
   dplyr::mutate(
     type = dplyr::case_when(
       "Helm" == equipment_type ~ "single",
@@ -90,7 +112,7 @@ equip_time_red_sd <- equip_time_red %>%
     )
   ) 
 
-single <- equip_time_red_sd %>%
+single <- equip_time_sd %>%
   dplyr::filter(
     type == "single"
   ) %>%
@@ -104,14 +126,14 @@ single <- equip_time_red_sd %>%
   ) %>%
   dplyr::ungroup()
 
-double <- equip_time_red_sd %>%
+double <- equip_time_sd %>%
   dplyr::filter(
     type == "double"
   ) %>%
   dplyr::mutate(
-    exp_min = NA,
-    exp_mean = NA,
-    exp_max = NA
+    exp_min = NA_real_,
+    exp_mean = NA_real_,
+    exp_max = NA_real_
   )
 
 equip_count <- base::rbind(single, double)
@@ -140,8 +162,7 @@ p <- ggplot(equip_count) +
     aes(
       x = equipment_type,
       y = sum,
-      fill = forcats::fct_rev(cuisse_orientation),
-      color = typology_shield 
+      fill = forcats::fct_rev(cuisse_orientation)
     ),
     stat = "identity"
   ) +
@@ -197,7 +218,6 @@ p <- ggplot(equip_count) +
     values = wescolors[1:6]
   )
   
-
 ggsave(
   filename = "03_equipment_completeness.png",
   plot = p,
