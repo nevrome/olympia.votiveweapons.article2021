@@ -5,11 +5,11 @@ load("data/weapons.RData")
 artefacts <- weapons
 
 site_areas <- sf::read_sf(
-  "../olympia-dev-votive-offerings/public_data/olympia_area_polygons_25834/olympia_areas_25834.shp", 
+  "data/olympia_area_polygons_25834/olympia_areas_25834.shp", 
   options = "ENCODING=UTF-8"
 )
 
-background_map <- raster::brick("../olympia-dev-votive-offerings/private_data/Raster/Karte_Olympia_small_modified_25834.tif")
+background_map <- raster::brick("data/background_map_olympia_epsg25834.tif")
 background_map_low_res <- raster::aggregate(background_map, 5)
 
 artefacts_per_area <- artefacts %>% 
@@ -47,7 +47,7 @@ p <- ggplot() +
   geom_sf_label(
     data = areas_artefacts,
     mapping = aes(label = area_name),
-    size = 2.8,
+    size = 3.5,
     alpha = 0.5
   ) +
   theme_bw() +
@@ -81,7 +81,7 @@ ggsave(
   device = "png",
   path = "plots/",
   width = 350,
-  height = 250,
+  height = 290,
   units = "mm",
   dpi = 300
 )

@@ -5,7 +5,7 @@ load("data/weapons.RData")
 artefacts <- weapons
 
 site_areas <- sf::read_sf(
-  "../olympia-dev-votive-offerings/public_data/olympia_area_polygons_25834/olympia_areas_25834.shp", 
+  "data/olympia_area_polygons_25834/olympia_areas_25834.shp", 
   options = "ENCODING=UTF-8"
 )
 
