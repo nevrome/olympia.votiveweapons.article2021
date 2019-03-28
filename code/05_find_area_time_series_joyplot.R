@@ -10,9 +10,6 @@ artefacts %<>%
   ) %>%
   dplyr::mutate(
     n = dplyr::n()
-  ) %>%
-  dplyr::filter(
-    n >= 5
   )
 
 area_amount <- artefacts %>% 
@@ -81,6 +78,9 @@ find_area_levels <- find_area_centers %>%
   as.character()
 
 artefact_timeseries <- artefact_timeseries_df_roll_avg %>%
+  dplyr::left_join(
+    area_amount
+  ) %>%
   dplyr::mutate(
     find_area = factor(find_area, levels = find_area_levels)
   )
@@ -88,10 +88,9 @@ artefact_timeseries <- artefact_timeseries_df_roll_avg %>%
 p <- ggplot() +
   ggridges::geom_density_ridges(
     data = artefact_timeseries,
-    mapping = aes(x = date, y = find_area, height = roll_sum),
+    mapping = aes(x = date, y = find_area, height = roll_sum, fill = n),
     stat = "identity",
-    alpha = 0.5,
-    fill = "darkgrey"
+    alpha = 0.5
   ) +
   geom_point(
     data = find_area_centers,
@@ -99,15 +98,28 @@ p <- ggplot() +
   ) +
   geom_label(
     data = area_amount,
-    mapping = aes(x = -800, y = find_area, label = n),
-    size = 5,
-    fill = "darkgrey",
+    mapping = aes(x = -800, y = find_area, label = n, fill = n),
+    size = 4,
     color = "white"
+  ) +
+  scale_fill_gradientn(
+    colours = wesanderson::wes_palette(
+      "Zissou1", 
+      type = "continuous"
+    ),
+    limits = c(0, 800)
+  ) +
+  guides(
+    fill = guide_colorbar(title = "Number of Artefacts")
   ) +
   theme_bw() +
   theme(
     axis.text = element_text(size = 15),
-    axis.text.y = element_text(hjust = 0)
+    axis.text.y = element_text(hjust = 0),
+    legend.position = "bottom",
+    legend.key.width = unit(1.5, "cm"),
+    legend.title = element_text(size = 15),
+    legend.text = element_text(size = 13)
   ) +
   xlim(-800, -400) +
   xlab("Year BC") +
@@ -119,7 +131,7 @@ ggsave(
   device = "png",
   path = "plots",
   width = 200,
-  height = 180,
+  height = 200,
   units = "mm",
   dpi = 300
 )
