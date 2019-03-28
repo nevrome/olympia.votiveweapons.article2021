@@ -66,6 +66,8 @@ p <- type_count %>%
     legend.position = c(0.95, 0.15),
     legend.justification = c(1, 1),
     legend.title = element_blank(),
+    legend.key.size = unit(1, 'lines'),
+    legend.spacing.x = unit(0.2, 'cm'),
     legend.text = element_text(size = 10),
     axis.text.y = element_text(size = 10, hjust = 0),
     axis.text.x = element_text(size = 10)
