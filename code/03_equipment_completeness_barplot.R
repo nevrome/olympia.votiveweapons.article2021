@@ -215,6 +215,10 @@ p <- ggplot(equip_count) +
     values = wescolors[c(1,4)],
     name = "Orientation",
     na.value = "darkgrey"
+  ) +
+  scale_linetype_manual(
+    values = c("dotted", "dashed"),
+    name = "Theoretical count of in panoplies"
   )
   
 ggsave(
