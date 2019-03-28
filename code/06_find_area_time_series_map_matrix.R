@@ -57,7 +57,8 @@ p <- ggplot() +
     colours = wesanderson::wes_palette(
       "Zissou1", 
       type = "continuous"
-    )
+    ),
+    limits = c(0, 800)
   ) +
   facet_wrap(
     ~date

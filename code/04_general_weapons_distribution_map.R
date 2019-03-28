@@ -39,7 +39,8 @@ p <- ggplot() +
     colours = wesanderson::wes_palette(
       "Zissou1", 
       type = "continuous"
-    )
+    ),
+    limits = c(0, 800)
   ) +
   guides(
     fill = guide_colorbar(title = "Number of Artefacts")
@@ -50,11 +51,16 @@ p <- ggplot() +
     size = 3.5,
     alpha = 0.5
   ) +
+  geom_label(
+    mapping = aes(x = 555875, y = 4165850, label = "Alpheios"),
+    size = 3.5,
+    alpha = 0.5
+  ) +
   theme_bw() +
   theme(
     axis.title = element_blank(),
-    axis.text = element_blank(),
-    axis.ticks = element_blank(),
+    axis.text.x = element_text(size = 11),
+    axis.text.y = element_text(size = 11, angle = 90, hjust = 0.5),
     panel.grid.major = element_line(colour = "white"), 
     panel.grid.minor = element_line(colour = "white"),
     legend.position = "bottom",
@@ -63,16 +69,39 @@ p <- ggplot() +
     legend.text = element_text(size = 13)
   ) +
   annotate(
-    "text", x = 555900, y = 4165700,
-    label = "200m"
+    "text", x = 555875, y = 4165700,
+    label = "250m",
+    size = 6
   ) +
   annotate(
-    "segment", x = 555800, xend = 556000, y = 4165680, yend = 4165680,
-    size = 2, colour = "black"
+    "segment", x = 555750, xend = 555800, y = 4165680, yend = 4165680,
+    size = 3, colour = "black"
   ) +
   annotate(
-    "text", x = 555900, y = 4165660,
-    label = "EPSG: 25834"
+    "segment", x = 555800, xend = 555850, y = 4165680, yend = 4165680,
+    size = 3, colour = "white"
+  ) +
+  annotate(
+    "segment", x = 555850, xend = 555900, y = 4165680, yend = 4165680,
+    size = 3, colour = "black"
+  ) +
+  annotate(
+    "segment", x = 555900, xend = 555950, y = 4165680, yend = 4165680,
+    size = 3, colour = "white"
+  ) +
+  annotate(
+    "segment", x = 555950, xend = 556000, y = 4165680, yend = 4165680,
+    size = 3, colour = "black"
+  ) +
+  annotate(
+    "text", x = 556030, y = 4165680,
+    label = "⇑",
+    size = 15
+  ) +
+  annotate(
+    "text", x = 555875, y = 4165660,
+    label = "EPSG: 25834",
+    size = 6
   )
 
 ggsave(
