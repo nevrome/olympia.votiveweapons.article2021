@@ -1,0 +1,45 @@
+Geotiff_Information:
+   Version: 1
+   Key_Revision: 1.0
+   Tagged_Information:
+      ModelTiepointTag (2,3):
+         0                 0                 0                
+         555150.812945973  4166315.17184236  0                
+      ModelPixelScaleTag (1,3):
+         0.180879321512095 0.180879321512095 0                
+      End_Of_Tags.
+   Keyed_Information:
+      GTModelTypeGeoKey (Short,1): ModelTypeProjected
+      GTRasterTypeGeoKey (Short,1): RasterPixelIsArea
+      GTCitationGeoKey (Ascii,33): "UTM Zone 34, Northern Hemisphere"
+      GeographicTypeGeoKey (Short,1): User-Defined
+      GeogCitationGeoKey (Ascii,86): "GCS Name = GRS 1980(IUGG, 1980)|Datum = unknown|Ellipsoid = GRS80|Primem = Greenwich|"
+      GeogGeodeticDatumGeoKey (Short,1): User-Defined
+      GeogAngularUnitsGeoKey (Short,1): Angular_Degree
+      GeogEllipsoidGeoKey (Short,1): User-Defined
+      GeogSemiMajorAxisGeoKey (Double,1): 6378137          
+      GeogInvFlatteningGeoKey (Double,1): 298.257222101    
+      GeogPrimeMeridianLongGeoKey (Double,1): 0                
+      GeogTOWGS84GeoKey (Double,3): 0                0                0                
+      ProjectedCSTypeGeoKey (Short,1): User-Defined
+      ProjectionGeoKey (Short,1): Proj_UTM_zone_34N
+      ProjLinearUnitsGeoKey (Short,1): Linear_Meter
+      End_Of_Keys.
+   End_Of_Geotiff.
+
+Projection = 16034 (UTM zone 34N)
+Projection Method: CT_TransverseMercator
+   ProjNatOriginLatGeoKey: 0.000000 (  0d 0' 0.00"N)
+   ProjNatOriginLongGeoKey: 21.000000 ( 21d 0' 0.00"E)
+   ProjScaleAtNatOriginGeoKey: 0.999600
+   ProjFalseEastingGeoKey: 500000.000000 m
+   ProjFalseNorthingGeoKey: 0.000000 m
+TOWGS84: 0,0,0
+Projection Linear Units: 9001/metre (1.000000m)
+
+Corner Coordinates:
+Upper Left    (  555150.813, 4166315.172)  ( 21d37'30.48"E, 37d38'32.37"N)
+Lower Left    (  555150.813, 4165448.217)  ( 21d37'30.24"E, 37d38' 4.24"N)
+Upper Right   (  556106.579, 4166315.172)  ( 21d38' 9.48"E, 37d38'32.16"N)
+Lower Right   (  556106.579, 4165448.217)  ( 21d38' 9.24"E, 37d38' 4.03"N)
+Center        (  555628.696, 4165881.695)  ( 21d37'49.86"E, 37d38'18.20"N)
