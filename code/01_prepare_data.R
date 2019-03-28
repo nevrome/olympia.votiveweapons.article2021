@@ -41,11 +41,6 @@ olympia_artefacts_2 <- olympia_artefacts_1 %>%
 #### simplify and standardize information ####
 olympia_artefacts_3 <- olympia_artefacts_2
 
-# small typology reordering
-helmet_ident <- olympia_artefacts_3$typology_class_3 == "Helm" & !is.na(olympia_artefacts_3$typology_class_3)
-olympia_artefacts_3$typology_class_3[helmet_ident] <- olympia_artefacts_3$typology_class_2[helmet_ident]
-olympia_artefacts_3$typology_class_2[helmet_ident] <- "Helm"
-
 # dating
 source("code/99_dating_preparation_helper_functions.R")
 
@@ -147,7 +142,7 @@ olympia_artefacts_3 %<>%
       )
     ),
     .funs = function(x) {
-      as.factor(x) %>% forcats::fct_explicit_na()
+      as.factor(x)
     }
   )
 
