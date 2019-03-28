@@ -108,7 +108,7 @@ olympia_artefacts_3 %<>%
       typology_class_2 == "Beinschiene" & grepl("Rechts", description) ~ "right",
       TRUE ~ NA_character_
     )
-  )
+  ) %>% dplyr::select(-description)
 
 # simplification overly complicated shield typology
 olympia_artefacts_3[
