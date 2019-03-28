@@ -2,7 +2,7 @@ library(magrittr)
 
 #### read raw database export ####
 olympia_artefacts_0 <- readr::read_csv(
-  "data/2019-03-27_Olympia_DB.csv",
+  "data/2019-03-28_Olympia_DB.csv",
   na = c("NA", "-1", ""),
   col_types = readr::cols(
     `Datierung_Metall::AnfDatJh` = readr::col_integer(),
