@@ -82,7 +82,7 @@ p <- ggplot() +
   )
 
 ggsave(
-  filename = "06_find_area_time_series_map.png",
+  filename = "05_find_area_time_series_map.png",
   plot = p,
   device = "png",
   path = "plots/",

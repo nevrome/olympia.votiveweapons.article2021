@@ -222,7 +222,7 @@ p <- ggplot(equip_count) +
   )
   
 ggsave(
-  filename = "03_equipment_completeness.png",
+  filename = "02_equipment_completeness.png",
   plot = p,
   device = "png",
   path = "plots",
