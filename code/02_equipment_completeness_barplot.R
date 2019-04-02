@@ -218,7 +218,7 @@ p <- ggplot(equip_count) +
   ) +
   scale_linetype_manual(
     values = c("dotted", "dashed"),
-    name = "Theoretical count of in panoplies"
+    name = "Theoretical number of panoplies"
   )
   
 ggsave(
