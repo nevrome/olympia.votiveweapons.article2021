@@ -3,8 +3,8 @@ library(ggplot2)
 
 wescolors <- wesanderson::wes_palette("Zissou1", 5)
 
-load("data/weapons_unfiltered.RData")
-artefacts <- weapons_unfiltered
+load("data/weapons.RData")
+artefacts <- weapons
 
 artefacts$cuisse_orientation <- artefacts$cuisse_orientation %>% forcats::fct_explicit_na()
 
