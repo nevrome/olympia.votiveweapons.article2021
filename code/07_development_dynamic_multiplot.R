@@ -99,7 +99,7 @@ classes_timeseries <- aoristAAR::aorist(
 ct <- classes_timeseries
 ct$sum <- tidyr::replace_na(ct$sum, 0)
 
-spline_model <- smooth.spline(ct$date, ct$sum, spar = 0.5)
+spline_model <- smooth.spline(ct$date, ct$sum, spar = 0.7)
 prediction_spline <- predict(spline_model, ct$date)
 
 spline <- tibble::tibble(
