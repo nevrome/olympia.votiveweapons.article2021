@@ -25,7 +25,6 @@ olympia_artefacts_1 <- olympia_artefacts_0 %>%
     dating_typology_end_sign = "Datierung_Metall::EndDatvn",
     dating_typology_end_century_section = "Datierung_Metall::EndDatZeitraum",
     dating_typology_end_precise = "Datierung_Metall::EndPraezise",
-    find_date = "Funddatum",
     find_area = "Herkunft_Lokal_Gebiet",
     typology_class_1 = "Klassifizierung_ObjektartAllgemein",
     typology_class_2 = "KurzbeschreibungMetall",
@@ -81,26 +80,14 @@ olympia_artefacts_3 %<>% tibble::add_column(
   -dating_typology_end_sign
 )
 
-# find_date
-clean_find_date <- function(x) {
-  dplyr::case_when(
-    grepl("^[0-9]{1,2}\\.[0-9]{1,2}\\.[0-9]{4}$", x) ~ lubridate::dmy(x),
-    grepl("^[0-9]{4}\\.[0-9]{1,2}\\.[0-9]{1,2}$", x) ~ lubridate::ymd(x),
-    TRUE ~ as.Date(NA)
-  )
-}
-olympia_artefacts_3 %<>%
-  dplyr::mutate(
-    find_date = clean_find_date(find_date)
-  )
-
 # find_area
 # remove ambiguous values 
 olympia_artefacts_3$find_area[grep("und|oder|\\?|\\,", olympia_artefacts_3$find_area)] <- NA_character_
 # simplification Southern Stadium area
-olympia_artefacts_3$find_area[olympia_artefacts_3$find_area %in% c("Stadion-Südwest", "Stadion-Südwestecke")] <- "Stadion-West"
+olympia_artefacts_3$find_area[olympia_artefacts_3$find_area %in% 
+  c("Stadion-Südwest", "Stadion-Südwestecke")] <- "Stadion-West"
 
-# cuisse orientation (for cuisses)
+# cuisse orientation
 olympia_artefacts_3 %<>%
   dplyr::mutate(
     cuisse_orientation = dplyr::case_when(
@@ -110,7 +97,7 @@ olympia_artefacts_3 %<>%
     )
   ) %>% dplyr::select(-description)
 
-# simplification overly complicated shield typology
+# simplification of overly complicated shield typology
 olympia_artefacts_3[
   !is.na(olympia_artefacts_3$typology_class_3) & 
   olympia_artefacts_3$typology_class_3 == "Silhouettenbleche",
@@ -151,6 +138,7 @@ olympia_artefacts_3 %<>%
 # unfiltered
 weapons_unfiltered <- olympia_artefacts_3 %>%
   dplyr::filter(
+    # type
     typology_class_1 == "Waffe"
   )
 save(weapons_unfiltered, file = "data/weapons_unfiltered.RData")
@@ -158,8 +146,11 @@ save(weapons_unfiltered, file = "data/weapons_unfiltered.RData")
 # filtered by time and area
 weapons <- olympia_artefacts_3 %>%
   dplyr::filter(
+    # type
     typology_class_1 == "Waffe" &
+      # area
       !is.na(find_area) &
+      # dating
       !is.na(dating_typology_start) &
       !is.na(dating_typology_end) &
       dating_typology_start < -400 & 
