@@ -2,19 +2,21 @@ library(magrittr)
 library(ggplot2)
 
 load("data/weapons.RData")
-artefacts <- weapons
+artefacts <- weapons %>% dplyr::filter(
+  !is.na(typology_class_2)
+)
 
 artefacts %<>%
   dplyr::group_by(
-    find_area
+    typology_class_2
   ) %>%
   dplyr::mutate(
     n = dplyr::n()
   )
 
-area_amount <- artefacts %>% 
+types_amount <- artefacts %>% 
   dplyr::group_by(
-    find_area
+    typology_class_2
   ) %>%
   dplyr::summarise(
     n = dplyr::n()
@@ -22,7 +24,7 @@ area_amount <- artefacts %>%
 
 artefact_timeseries_df <- aoristAAR::aorist(
   artefacts,
-  split_vars = c("find_area"),
+  split_vars = c("typology_class_2"),
   from = "dating_typology_start",
   to = "dating_typology_end",
   method = "weight"
@@ -32,22 +34,12 @@ artefact_timeseries_df %<>% dplyr::filter(
   sum != 0
 )
 
-artefact_timeseries_df_roll_avg <- artefact_timeseries_df %>%
+artefact_timeseries <- artefact_timeseries_df %>%
   dplyr::group_by(
-    find_area
+    typology_class_2
   ) %>%
   dplyr::arrange(
     date
-  ) %>%
-  dplyr::mutate(
-    roll_sum = zoo::rollapply(
-      data = sum, 
-      width = 10, 
-      FUN = mean, 
-      align = "right", 
-      fill = NA, 
-      na.rm = T
-    )
   ) %>%
   dplyr::mutate(
     total_sum = sum(sum, na.rm = T),
@@ -60,45 +52,45 @@ artefact_timeseries_df_roll_avg <- artefact_timeseries_df %>%
     -total_sum, -cum_sum, -fit
   )
 
-find_area_centers <- artefact_timeseries_df_roll_avg %>%
+typology_class_2_centers <- artefact_timeseries %>%
   dplyr::filter(
     center
   )
 
-find_area_levels <- find_area_centers %>%
+typology_class_2_levels <- typology_class_2_centers %>%
   dplyr::group_by(
-    find_area
+    typology_class_2
   ) %>%
   dplyr::filter(dplyr::row_number() == 1) %>%
   dplyr::ungroup() %>%
   dplyr::arrange(
     date
   ) %$%
-  find_area %>%
+  typology_class_2 %>%
   as.character()
 
-artefact_timeseries <- artefact_timeseries_df_roll_avg %>%
+artefact_timeseries %<>%
   dplyr::left_join(
-    area_amount
+    types_amount
   ) %>%
   dplyr::mutate(
-    find_area = factor(find_area, levels = find_area_levels)
+    typology_class_2 = factor(typology_class_2, levels = typology_class_2_levels)
   )
 
 p <- ggplot() +
   ggridges::geom_density_ridges(
     data = artefact_timeseries,
-    mapping = aes(x = date, y = find_area, height = roll_sum, fill = n),
+    mapping = aes(x = date, y = typology_class_2, height = sum, fill = n),
     stat = "identity",
     alpha = 0.5
   ) +
   geom_point(
-    data = find_area_centers,
-    mapping = aes(x = date, y = find_area)
+    data = typology_class_2_centers,
+    mapping = aes(x = date, y = typology_class_2)
   ) +
   geom_label(
-    data = area_amount,
-    mapping = aes(x = -800, y = find_area, label = n, fill = n),
+    data = types_amount,
+    mapping = aes(x = -800, y = typology_class_2, label = n, fill = n),
     size = 4,
     color = "white"
   ) +
@@ -107,7 +99,7 @@ p <- ggplot() +
       "Zissou1", 
       type = "continuous"
     ),
-    limits = c(0, 800)
+    limits = c(0, 1000)
   ) +
   guides(
     fill = guide_colorbar(title = "Number of Artefacts")
@@ -126,7 +118,7 @@ p <- ggplot() +
   ylab("")
   
 ggsave(
-  filename = "04_find_area_time_series.png",
+  filename = "04_typology_class_2_time_series.png",
   plot = p,
   device = "png",
   path = "plots",
