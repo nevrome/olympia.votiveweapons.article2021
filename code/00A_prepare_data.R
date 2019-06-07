@@ -113,11 +113,17 @@ olympia_artefacts_3[
     olympia_artefacts_3$typology_class_2 == "Schild oder Schildfragment",
   ]$typology_class_4 %>% substr(1,5) %>% gsub("[a-z]|[αβγδεζηθικλμνξοπρςστυφχψω]", "", .)
 
+#### reduce selection to weapons ####
+
+weapon_artefacts <- olympia_artefacts_3 %>%
+  dplyr::filter(
+    typology_class_1 == "Waffe"
+  )
 
 #### finalize data types ####
 
 # factors
-olympia_artefacts_3 %<>%
+weapon_artefacts %<>%
   dplyr::mutate_at(
     .vars = dplyr::vars(
       tidyselect::one_of(
@@ -136,15 +142,11 @@ olympia_artefacts_3 %<>%
 #### create relevant subset for this paper and store them ####
 
 # unfiltered
-weapons_unfiltered <- olympia_artefacts_3 %>%
-  dplyr::filter(
-    # type
-    typology_class_1 == "Waffe"
-  )
+weapons_unfiltered <- weapon_artefacts
 save(weapons_unfiltered, file = "data/weapons_unfiltered.RData")
 
 # filtered by time and area
-weapons <- olympia_artefacts_3 %>%
+weapons <- weapon_artefacts %>%
   dplyr::filter(
     # type
     typology_class_1 == "Waffe" &
