@@ -60,6 +60,58 @@ equip_artefacts$typology_shield <- "NA"
 equip_artefacts$typology_shield[equip_artefacts$typology_class_2 == "Schild oder Schildfragment"] <- 
   as.character(equip_artefacts$typology_class_3[equip_artefacts$typology_class_2 == "Schild oder Schildfragment"])
 
+equip_count_general <- equip_artefacts %>%
+  dplyr::group_by(
+    equipment_type
+  ) %>%
+  dplyr::summarise(
+    sum = dplyr::n()
+  )
+
+#### Plot A: Simple panoply artefact distribution ####
+
+A <- equip_artefacts %>%
+  ggplot() +
+  geom_bar(
+    aes(
+      x = equipment_type,
+      fill = forcats::fct_rev(cuisse_orientation)
+    )
+  ) +
+  geom_label(
+    data = equip_count_general,
+    aes(
+      x = equipment_type,
+      y = -50,
+      label = sum
+    ),
+    size = 2.5,
+    fill = "darkgrey",
+    color = "white"
+  ) +
+  theme_bw() +
+  theme(
+    axis.text.y = element_text(hjust = 0, size = 10),
+    axis.title.x = element_text(size = 10),
+    legend.position = "bottom"
+  ) +
+  xlab("") +
+  ylab("Number of artefacts") +
+  coord_flip(
+    ylim = c(-50, 1000)
+  ) +
+  scale_fill_manual(
+    limits = c("left", "right"),
+    values = wescolors[c(1,4)],
+    name = "Orientation",
+    na.value = "darkgrey"
+  ) +
+  guides(
+    fill = FALSE
+  )
+
+#### Plot B: Segregation by time steps ####
+
 # temporal distribution
 equip_time <- aoristAAR::aorist(
   equip_artefacts, 
@@ -158,7 +210,7 @@ equip_count <- equip_count %>%
   dplyr::ungroup()
 
 # plot
-p <- ggplot(equip_count) +
+B <- ggplot(equip_count) +
   facet_wrap(~date) +
   geom_bar(
     aes(
@@ -220,14 +272,20 @@ p <- ggplot(equip_count) +
     values = c("dotted", "dashed"),
     name = "Theoretical number of panoplies"
   )
+
+
+
+#### combine plots ####
   
+p <- cowplot::plot_grid(A, B, labels = "AUTO", ncol = 1, rel_heights = c(0.3, 1))
+
 ggsave(
   filename = "02_equipment_completeness.png",
   plot = p,
   device = "png",
   path = "plots",
   width = 200,
-  height = 200,
+  height = 240,
   units = "mm",
   dpi = 300
 )
