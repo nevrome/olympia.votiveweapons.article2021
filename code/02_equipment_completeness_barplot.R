@@ -126,7 +126,7 @@ equip_time <- aoristAAR::aorist(
 equip_time_red <- equip_time %>%
   dplyr::filter(
     date %in% seq(-800, -400, 50)
-  ) 
+  )
 
 equip_time_red_non_shield <- equip_time_red %>% 
   dplyr::filter(
@@ -150,67 +150,16 @@ equip_time_red_shield <- equip_time_red %>%
 
 equip_time_merged <- rbind(equip_time_red_non_shield, equip_time_red_shield)
 
-equip_time_sd <- equip_time_merged %>%
-  dplyr::mutate(
-    type = dplyr::case_when(
-      "Helm" == equipment_type ~ "single",
-      "Beinschiene" == equipment_type ~ "double",
-      "Armschiene" == equipment_type ~ "single",
-      "Lanze oder Speer" == equipment_type ~ "single",
-      "Schild" == equipment_type ~ "single",
-      "Panzer" == equipment_type ~ "single",
-      "Lanzenschuh" == equipment_type ~ "single",
-      "Knöchelpanzer" == equipment_type ~ "double",
-      "Mitra" == equipment_type ~ "single",
-      TRUE ~ NA_character_
-    )
-  ) 
-
-single <- equip_time_sd %>%
-  dplyr::filter(
-    type == "single"
-  ) %>%
+equip_time_count <- equip_time_merged %>%
   dplyr::group_by(
-    date
+    date, equipment_type
   ) %>%
-  dplyr::mutate(
-    exp_min = min(sum),
-    exp_mean = mean(sum),
-    exp_max = max(sum)
-  ) %>%
-  dplyr::ungroup()
-
-double <- equip_time_sd %>%
-  dplyr::filter(
-    type == "double"
-  ) %>%
-  dplyr::mutate(
-    exp_min = NA_real_,
-    exp_mean = NA_real_,
-    exp_max = NA_real_
+  dplyr::summarise(
+    sum = sum(sum)
   )
 
-equip_count <- base::rbind(single, double)
-
-equip_count <- equip_count %>%
-  dplyr::group_by(
-    date
-  ) %>%
-  dplyr::mutate(
-    exp_min = ifelse(
-      is.na(exp_min), mean(exp_min, na.rm = T) * 2, exp_min
-    ),
-    exp_mean = ifelse(
-      is.na(exp_mean), mean(exp_mean, na.rm = T) * 2, exp_mean
-    ),
-    exp_max = ifelse(
-      is.na(exp_max), mean(exp_max, na.rm = T)* 2, exp_max
-    )
-  ) %>%
-  dplyr::ungroup()
-
 # plot
-B <- ggplot(equip_count) +
+B <- equip_time_merged %>% ggplot() +
   facet_wrap(~date) +
   geom_bar(
     aes(
@@ -220,28 +169,8 @@ B <- ggplot(equip_count) +
     ),
     stat = "identity"
   ) +
-  geom_hline(
-    aes(
-      yintercept = exp_max,
-      linetype = type
-    )
-  ) +
-  geom_point(
-    aes(
-      x = equipment_type,
-      y = exp_mean
-    ),
-    color = "black",
-    size = 0.7
-  ) +
   geom_label(
-    data = equip_count %>%
-      dplyr::group_by(
-        date, equipment_type
-      ) %>%
-      dplyr::summarise(
-        sum = sum(sum)
-      ),
+    data = equip_time_count,
     aes(
       x = equipment_type,
       y = -110,
@@ -260,17 +189,13 @@ B <- ggplot(equip_count) +
   xlab("") +
   ylab("Number of artefacts") +
   coord_flip(
-    ylim = c(-150, 1000)
+    ylim = c(-150, 500)
   ) +
   scale_fill_manual(
     limits = c("left", "right"),
     values = wescolors[c(1,4)],
     name = "Orientation",
     na.value = "darkgrey"
-  ) +
-  scale_linetype_manual(
-    values = c("dotted", "dashed"),
-    name = "Theoretical number of panoplies"
   )
 
 
