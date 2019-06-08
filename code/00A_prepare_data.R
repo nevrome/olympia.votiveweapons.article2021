@@ -120,6 +120,8 @@ weapon_artefacts <- olympia_artefacts_3 %>%
   )
 
 #### translation to english ####
+
+# load translation tables
 translation_typology_class_2 <- readr::read_csv(
   "data/translation_de_en_typology_class_2.csv",
   col_types = readr::cols(
@@ -127,13 +129,24 @@ translation_typology_class_2 <- readr::read_csv(
     en = readr::col_character()
   )
 )
+translation_find_area <- readr::read_csv(
+  "data/translation_de_en_find_area.csv",
+  col_types = readr::cols(
+    de = readr::col_character(),
+    en = readr::col_character()
+  )
+)
 
+# apply translation
 weapon_artefacts %<>%
   dplyr::mutate(
     typology_class_2 = translation_typology_class_2$en[
-        match(weapon_artefacts$typology_class_2, translation_typology_class_2$de)
-      ]
-    )
+      match(typology_class_2, translation_typology_class_2$de)
+    ],
+    find_area = translation_find_area$en[
+      match(find_area, translation_find_area$de)
+    ]
+  )
 
 #### finalize data types ####
 
