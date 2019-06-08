@@ -1,15 +1,22 @@
 library(magrittr)
 library(ggplot2)
 
+#### data preparation ####
+
+# colour palette
 wescolors <- wesanderson::wes_palette("Zissou1", 5)
 
+# load data
 load("data/weapons_unfiltered.RData")
 artefacts <- weapons_unfiltered
 
+# artefact type count considering a classified dating variable
 type_count <- artefacts %>%
+  # remove artefacts without typological attribution
   dplyr::filter(
     !is.na(typology_class_2)
   ) %>%
+  # classify dating information
   dplyr::mutate(
     dated = dplyr::case_when(
       abs(dating_typology_start - dating_typology_end) >= 100 ~ "less precise (>100 years)",
@@ -17,6 +24,7 @@ type_count <- artefacts %>%
       is.na(dating_typology_start) & is.na(dating_typology_end) ~ "no dating information"
     )
   ) %>%
+  # count by type
   dplyr::group_by(
     typology_class_2, dated
   ) %>%
@@ -25,10 +33,12 @@ type_count <- artefacts %>%
   ) %>%
   dplyr::ungroup()
 
+# define factor levels for the classified dating information
 type_count$dated <- factor(type_count$dated, levels = c(
   "no dating information", "less precise (>100 years)", "more precise (<100 years)"
 ))
 
+# general artefact type count
 general_count <- artefacts %>%
   dplyr::filter(
     !is.na(typology_class_2)
@@ -43,7 +53,10 @@ general_count <- artefacts %>%
     n
   )
 
+# define factor order for typology variable
 type_count$typology_class_2 <- factor(type_count$typology_class_2, levels = general_count$typology_class_2)
+
+#### plot ####
 
 p <- type_count %>%
   ggplot() +
@@ -87,4 +100,3 @@ ggsave(
   units = "mm",
   dpi = 300
 )
-
