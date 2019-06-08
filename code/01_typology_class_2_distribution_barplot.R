@@ -57,7 +57,6 @@ general_count <- artefacts %>%
 type_count$typology_class_2 <- factor(type_count$typology_class_2, levels = general_count$typology_class_2)
 
 #### plot ####
-
 p <- type_count %>%
   ggplot() +
   geom_bar(

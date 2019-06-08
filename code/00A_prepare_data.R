@@ -114,11 +114,26 @@ olympia_artefacts_3[
   ]$typology_class_4 %>% substr(1,5) %>% gsub("[a-z]|[αβγδεζηθικλμνξοπρςστυφχψω]", "", .)
 
 #### reduce selection to weapons ####
-
 weapon_artefacts <- olympia_artefacts_3 %>%
   dplyr::filter(
     typology_class_1 == "Waffe"
   )
+
+#### translation to english ####
+translation_typology_class_2 <- readr::read_csv(
+  "data/translation_de_en_typology_class_2.csv",
+  col_types = readr::cols(
+    de = readr::col_character(),
+    en = readr::col_character()
+  )
+)
+
+weapon_artefacts %<>%
+  dplyr::mutate(
+    typology_class_2 = translation_typology_class_2$en[
+        match(weapon_artefacts$typology_class_2, translation_typology_class_2$de)
+      ]
+    )
 
 #### finalize data types ####
 
