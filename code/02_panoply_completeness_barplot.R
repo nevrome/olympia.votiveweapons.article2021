@@ -205,7 +205,7 @@ B <- equip_time_merged %>% ggplot() +
 p <- cowplot::plot_grid(A, B, labels = "AUTO", ncol = 1, rel_heights = c(0.3, 1))
 
 ggsave(
-  filename = "02_equipment_completeness.png",
+  filename = "02_panoply_completeness.png",
   plot = p,
   device = "png",
   path = "plots",
