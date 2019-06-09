@@ -1,28 +1,49 @@
 library(magrittr)
 library(ggplot2)
 
+#### data preparation ####
+
+# load data
 load("data/weapons.RData")
 artefacts <- weapons
-
 site_areas <- sf::read_sf(
   "data/olympia_area_polygons_25834/olympia_areas_25834.shp", 
   options = "ENCODING=UTF-8"
 )
-
 background_map <- raster::brick("data/background_map_olympia_epsg25834.tif")
+
+# reduce raster resolution
 background_map_low_res <- raster::aggregate(background_map, 5)
 
+# translate area names in sf data.frame
+translation_find_area <- readr::read_csv(
+  "data/translation_de_en_find_area.csv",
+  col_types = readr::cols(
+    de = readr::col_character(),
+    en = readr::col_character()
+  )
+)
+site_areas %<>%
+  dplyr::mutate(
+    area_name = translation_find_area$en[
+      match(area_name, translation_find_area$de)
+      ]
+  )
+
+# count artefacts by area
 artefacts_per_area <- artefacts %>% 
   dplyr::group_by(find_area) %>%
   dplyr::count()
 
-# lack of attribution
-artefacts_per_area$find_area[!(artefacts_per_area$find_area %in% site_areas$area_name)]
-site_areas$area_name[!(site_areas$area_name %in% artefacts_per_area$find_area)]
+# # identify areas with lack of attribution
+# artefacts_per_area$find_area[!(artefacts_per_area$find_area %in% site_areas$area_name)]
+# site_areas$area_name[!(site_areas$area_name %in% artefacts_per_area$find_area)]
 
+# merge count info and spatial info
 areas_artefacts <- site_areas %>% 
   dplyr::left_join(artefacts_per_area, by = c("area_name" = "find_area"))
 
+#### plot ####
 p <- ggplot() +
   ggspatial::layer_spatial(background_map_low_res) +
   geom_sf(
@@ -48,7 +69,7 @@ p <- ggplot() +
   geom_sf_label(
     data = areas_artefacts,
     mapping = aes(label = area_name),
-    size = 3.5,
+    size = 3,
     alpha = 0.5
   ) +
   geom_label(
@@ -114,4 +135,3 @@ ggsave(
   units = "mm",
   dpi = 300
 )
-
