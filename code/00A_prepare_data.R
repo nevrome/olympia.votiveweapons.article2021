@@ -87,15 +87,16 @@ olympia_artefacts_3$find_area[grep("und|oder|\\?|\\,", olympia_artefacts_3$find_
 olympia_artefacts_3$find_area[olympia_artefacts_3$find_area %in% 
   c("Stadion-Südwest", "Stadion-Südwestecke")] <- "Stadion-West"
 
-# cuisse orientation
+# greave orientation
 olympia_artefacts_3 %<>%
   dplyr::mutate(
-    cuisse_orientation = dplyr::case_when(
+    greave_orientation = dplyr::case_when(
       typology_class_2 == "Beinschiene" & grepl("Links", description) ~ "left",
       typology_class_2 == "Beinschiene" & grepl("Rechts", description) ~ "right",
       TRUE ~ NA_character_
     )
   ) %>% dplyr::select(-description)
+olympia_artefacts_3$greave_orientation %<>% forcats::fct_explicit_na()
 
 # simplification of overly complicated shield typology
 olympia_artefacts_3[
@@ -156,7 +157,7 @@ weapon_artefacts %<>%
     .vars = dplyr::vars(
       tidyselect::one_of(
         "find_area",
-        "cuisse_orientation"
+        "greave_orientation"
       ),
       tidyselect::starts_with(
         "typology_class"
