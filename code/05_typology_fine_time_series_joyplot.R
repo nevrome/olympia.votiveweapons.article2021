@@ -132,7 +132,7 @@ p <- ggplot() +
   )
 
 ggsave(
-  filename = "06_typology_fine_time_series.png",
+  filename = "05_typology_fine_time_series.png",
   plot = p,
   device = "png",
   path = "plots",

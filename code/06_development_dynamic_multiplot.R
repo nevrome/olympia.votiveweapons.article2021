@@ -277,7 +277,7 @@ D <- ggplot() +
 p <- cowplot::plot_grid(A, B, C, D, labels = "AUTO", ncol = 1, align = 'v', rel_heights = c(1, 1, 1, 1))
 
 ggsave(
-  filename = "07_development_dynamic.png",
+  filename = "06_development_dynamic.png",
   plot = p,
   device = "png",
   path = "plots",

@@ -192,7 +192,7 @@ B <- equip_time_count_greave %>% ggplot() +
 p <- cowplot::plot_grid(A, B, labels = "AUTO", ncol = 1, rel_heights = c(0.3, 1))
 
 ggsave(
-  filename = "02_panoply_completeness.png",
+  filename = "07_panoply_completeness.png",
   plot = p,
   device = "png",
   path = "plots",
