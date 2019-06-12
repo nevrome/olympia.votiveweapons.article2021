@@ -1,19 +1,15 @@
 library(magrittr)
 library(ggplot2)
 
+#### data preparation ####
+
+# load data
 load("data/weapons.RData")
 artefacts <- weapons %>% dplyr::filter(
   !is.na(typology_class_2)
 )
 
-artefacts %<>%
-  dplyr::group_by(
-    typology_class_2
-  ) %>%
-  dplyr::mutate(
-    n = dplyr::n()
-  )
-
+# count by artefact category
 types_amount <- artefacts %>% 
   dplyr::group_by(
     typology_class_2
@@ -22,6 +18,7 @@ types_amount <- artefacts %>%
     n = dplyr::n()
   )
 
+# time series by artefact category
 artefact_timeseries_df <- aoristAAR::aorist(
   artefacts,
   split_vars = c("typology_class_2"),
@@ -30,10 +27,12 @@ artefact_timeseries_df <- aoristAAR::aorist(
   method = "weight"
 )
 
+# remove time steps without information
 artefact_timeseries_df %<>% dplyr::filter(
   sum != 0
 )
 
+# find centers of category distributions
 artefact_timeseries <- artefact_timeseries_df %>%
   dplyr::group_by(
     typology_class_2
@@ -57,6 +56,7 @@ typology_class_2_centers <- artefact_timeseries %>%
     center
   )
 
+# order by center points
 typology_class_2_levels <- typology_class_2_centers %>%
   dplyr::group_by(
     typology_class_2
@@ -77,6 +77,7 @@ artefact_timeseries %<>%
     typology_class_2 = factor(typology_class_2, levels = typology_class_2_levels)
   )
 
+#### plot ####
 p <- ggplot() +
   ggridges::geom_density_ridges(
     data = artefact_timeseries,
@@ -90,7 +91,7 @@ p <- ggplot() +
   ) +
   geom_label(
     data = types_amount,
-    mapping = aes(x = -800, y = typology_class_2, label = n, fill = n),
+    mapping = aes(x = -980, y = typology_class_2, label = n, fill = n),
     size = 4,
     color = "white"
   ) +
@@ -108,12 +109,14 @@ p <- ggplot() +
   theme(
     axis.text = element_text(size = 15),
     axis.text.y = element_text(hjust = 0),
-    legend.position = "bottom",
     legend.key.width = unit(1.5, "cm"),
     legend.title = element_text(size = 15),
-    legend.text = element_text(size = 13)
+    legend.text = element_text(size = 13),
+    plot.margin = unit(c(0.5,0.5,4,0.5), "lines"),
+    legend.position = c(0.11, -0.13),
+    legend.direction = "horizontal"
   ) +
-  xlim(-800, -400) +
+  xlim(-1000, -400) +
   xlab("Year BC") +
   ylab("")
   
