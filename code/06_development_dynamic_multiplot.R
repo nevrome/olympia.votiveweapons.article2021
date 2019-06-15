@@ -253,21 +253,22 @@ D <- ggplot() +
     colours = wesanderson::wes_palette(
       "Zissou1", 
       type = "continuous"
-    )
+    ), 
+    breaks = c(0, 100, 200)
   ) +
   scale_size(range = c(0.3, 2), guide = FALSE) +
   scale_x_continuous(breaks = seq(-1000, -400, 100), limits = c(-1000, -400)) +
   ylim(0, max(distance$cumsum_ed)) +
   theme_bw() +
   theme(
-    legend.position = c(0.01, 0.99),
+    legend.position = c(0.02, 0.98),
     legend.justification = c(0, 1),
     legend.direction = "horizontal",
     legend.text = element_text(size = 8),
     legend.title = element_text(size = 8),
     legend.background = element_rect(fill = "white")
   ) +
-  ylab("Euclidean distance") +
+  ylab("Cumulated distance") +
   xlab("Year BC") +
   guides(
     fill = guide_colorbar(
@@ -281,7 +282,7 @@ D <- ggplot() +
 p <- cowplot::plot_grid(A, B, C, D, labels = "AUTO", ncol = 1, align = 'v', rel_heights = c(1, 1, 1, 1))
 
 ggsave(
-  filename = "06_development_dynamic2.png",
+  filename = "06_development_dynamic.png",
   plot = p,
   device = "png",
   path = "plots",
