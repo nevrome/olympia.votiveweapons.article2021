@@ -219,7 +219,8 @@ distance <- tibble::tibble(
   start = df$date[-length(df$date)],
   end = df$date[-1],
   mean = (start + end)/2,
-  ed = distance_timesteps   
+  ed = distance_timesteps,
+  cumsum_ed = cumsum(ed)
 )
 
 #### Plot D: cultural distance from one timestep to the next ####
@@ -235,18 +236,18 @@ D <- ggplot() +
     linetype = 3
   ) +
   geom_rect(
-    data = distance %>% dplyr::filter(ed != 0),
-    aes(xmin = start, xmax = end, ymin = 0, ymax = max(ed), fill = ed, size = ed)
+    data = distance,
+    aes(xmin = start, xmax = end, ymin = 0, ymax = max(cumsum_ed), fill = ed, size = ed)
   ) +
   geom_line(
-    data = distance %>% dplyr::filter(ed != 0),
-    aes(x = mean, y = ed),
+    data = distance,
+    aes(x = mean, y = cumsum_ed),
     color = "black",
     size = 0.3
   ) +
   geom_point(
-    data = distance %>% dplyr::filter(ed != 0),
-    aes(x = mean, y = ed)
+    data = distance,
+    aes(x = mean, y = cumsum_ed)
   ) +
   scale_fill_gradientn(
     colours = wesanderson::wes_palette(
@@ -256,7 +257,7 @@ D <- ggplot() +
   ) +
   scale_size(range = c(0.3, 2), guide = FALSE) +
   scale_x_continuous(breaks = seq(-1000, -400, 100), limits = c(-1000, -400)) +
-  ylim(0, max(distance$ed)) +
+  ylim(0, max(distance$cumsum_ed)) +
   theme_bw() +
   theme(
     legend.position = c(0.01, 0.99),
@@ -289,3 +290,4 @@ ggsave(
   units = "mm",
   dpi = 300
 )
+
