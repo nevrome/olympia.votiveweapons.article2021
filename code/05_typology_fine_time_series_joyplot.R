@@ -7,8 +7,14 @@ library(viridis)
 # load data
 load("data/weapons.RData")
 
-# create a variable that combines typology_class_2 and typology_class_4
+# remove artefacts with no information in typology_class_4
 artefacts <- weapons %>%
+  dplyr::filter(
+    !is.na(typology_class_4)
+  )
+
+# create a variable that combines typology_class_2 and typology_class_4
+artefacts <- artefacts %>%
   dplyr::mutate(
     typology_fine = ifelse(
       !is.na(typology_class_4), 
