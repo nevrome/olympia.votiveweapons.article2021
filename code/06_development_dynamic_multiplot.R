@@ -207,9 +207,17 @@ ma <- df %>%
   as.matrix() %>%
   tidyr::replace_na(0)
 
+ma_corr <- t(apply(
+  ma,
+  1,
+  function(x) {
+    x/sum(x)
+  }
+))
+
 distance_timesteps <- c()
-for (i in 1:(nrow(ma) - 1)) {
-  distance_timesteps[i] <- dist(ma[c(i, i+1),])
+for (i in 1:(nrow(ma_corr) - 1)) {
+  distance_timesteps[i] <- dist(ma_corr[c(i, i+1),])
 }
 
 distance <- tibble::tibble(
@@ -277,7 +285,7 @@ D <- ggplot() +
 p <- cowplot::plot_grid(A, B, C, D, labels = "AUTO", ncol = 1, align = 'v', rel_heights = c(1, 1, 1, 1))
 
 ggsave(
-  filename = "06_development_dynamic.png",
+  filename = "06_development_dynamic2.png",
   plot = p,
   device = "png",
   path = "plots",
