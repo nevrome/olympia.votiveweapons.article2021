@@ -32,9 +32,9 @@ artefacts %<>%
       typology_class_2 == "Sauroter" ~ "Sauroter",
       typology_class_2 == "Mitra" ~ "Mitra",
       typology_class_2 == "Cuirass" ~ "Cuirass",
-      typology_class_2 == "Vambrace" ~ "Vambrace",
+      typology_class_2 == "Arm guard" ~ "Arm guard",
       typology_class_2 == "Greave" ~ "Greave",
-      typology_class_2 == "Ankle armour" ~ "Ankle armour",
+      typology_class_2 == "Ankle guard" ~ "Ankle guard",
       TRUE ~ NA_character_
     )
   )
@@ -52,12 +52,12 @@ equip_artefacts$equipment_type <- factor(
     "Helmet",
     "Cuirass",
     "Mitra",
-    "Vambrace",
+    "Arm guard",
     "Lance or Spear",
     "Sauroter",
     "Shield(fragment)",
     "Greave",
-    "Ankle armour"
+    "Ankle guard"
   ) %>% rev
 )
 

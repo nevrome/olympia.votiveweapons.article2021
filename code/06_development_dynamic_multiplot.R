@@ -1,9 +1,9 @@
 library(magrittr)
 library(ggplot2)
 
-wescolors <- wesanderson::wes_palette("Zissou1", 5)
-
+#### load data ####
 load("data/weapons.RData")
+wescolors <- wesanderson::wes_palette("Zissou1", 5)
 
 #### weapons time series ####
 weapons_timeseries_number <- aoristAAR::aorist(
