@@ -113,7 +113,7 @@ p <- ggplot() +
     legend.title = element_text(size = 15),
     legend.text = element_text(size = 13),
     plot.margin = unit(c(0.5,0.5,4,0.5), "lines"),
-    legend.position = c(0.11, -0.13),
+    legend.position = c(0.11, -0.16),
     legend.direction = "horizontal"
   ) +
   xlim(-1000, -400) +
@@ -126,7 +126,7 @@ ggsave(
   device = "png",
   path = "plots",
   width = 200,
-  height = 200,
+  height = 160,
   units = "mm",
   dpi = 300
 )
