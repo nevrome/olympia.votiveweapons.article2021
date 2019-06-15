@@ -207,13 +207,8 @@ ma <- df %>%
   as.matrix() %>%
   tidyr::replace_na(0)
 
-ma_corr <- t(apply(
-  ma,
-  1,
-  function(x) {
-    x/sum(x)
-  }
-))
+ma_corr <- ma %>%
+  quantAAR::booleanize()
 
 distance_timesteps <- c()
 for (i in 1:(nrow(ma_corr) - 1)) {
