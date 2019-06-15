@@ -125,11 +125,11 @@ p <- ggplot() +
     axis.text.x = element_text(size = 17),
     axis.text.y = element_text(size = 15, hjust = 0),
     axis.title.x = element_text(size = 17),
-    legend.text = element_text(size = 15),
+    legend.text = element_text(size = 16),
     legend.position = "bottom",
     legend.direction = "horizontal"
   ) +
-  guides(fill = guide_legend("", nrow = 6), color = guide_legend("", nrow = 6)) +
+  guides(fill = guide_legend("", nrow = 4), color = guide_legend("", nrow = 4)) +
   xlim(-800, -400) +
   ylab("") +
   xlab("Year BC") +
