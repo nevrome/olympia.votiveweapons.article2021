@@ -2,29 +2,35 @@ library(magrittr)
 library(ggplot2)
 library(viridis)
 
+#### data preparation ####
+
+# load data
 load("data/weapons.RData")
+
+# create a variable that combines typology_class_2 and typology_class_4
 artefacts <- weapons %>%
   dplyr::mutate(
     typology_fine = ifelse(
-      !is.na(typology_class_4), stringr::str_trunc(paste0(typology_class_2, " ~ ", typology_class_4), 40), as.character(typology_class_2)
+      !is.na(typology_class_4), 
+      stringr::str_trunc(paste0(typology_class_2, " ~ ", typology_class_4), 40), 
+      as.character(typology_class_2)
     )
   )
 
-# artefact_timeseries_df$typology_fine <- gsub("+", "\n", artefact_timeseries_df$typology_fine)
-# levels(artefact_timeseries_df$typology_fine) <- gsub("+", "\n", levels(artefact_timeseries_df$typology_fine))
-
+# count artefacts and remove artefact categories with less than 10 values 
 artefacts <- artefacts %>% 
   dplyr::group_by(
     typology_fine
   ) %>%
   dplyr::mutate(
     n = dplyr::n()
-  ) %>%
+  ) %>% 
   dplyr::filter(
     n >= 10
   ) %>%
   dplyr::ungroup()
 
+# count again for the plot
 type_fine_amount <- artefacts %>% 
   dplyr::group_by(
     typology_fine
@@ -34,6 +40,7 @@ type_fine_amount <- artefacts %>%
     typology_class_2 = dplyr::first(typology_class_2)
   )
 
+# calculate time series
 artefact_timeseries_df <- aoristAAR::aorist(
   artefacts,
   split_vars = c("typology_class_2", "typology_fine"),
@@ -41,10 +48,12 @@ artefact_timeseries_df <- aoristAAR::aorist(
   to = "dating_typology_end"
 )
 
+# remove time steps without information
 artefact_timeseries_df %<>% dplyr::filter(
   sum != 0
 )
 
+# find centers of category distributions
 artefact_timeseries_df <- artefact_timeseries_df %>%
   dplyr::group_by(
     typology_fine
@@ -68,6 +77,7 @@ typology_fine_centers <- artefact_timeseries_df %>%
     center
   )
 
+# order by center points
 typology_fine_levels <- typology_fine_centers %>%
   dplyr::group_by(
     typology_fine
@@ -85,6 +95,7 @@ artefact_timeseries <- artefact_timeseries_df %>%
     typology_fine = factor(typology_fine, levels = typology_fine_levels)
   )
 
+#### plot ####
 p <- ggplot() +
   ggridges::geom_density_ridges(
     data = artefact_timeseries,
@@ -141,4 +152,3 @@ ggsave(
   units = "mm",
   dpi = 300
 )
-
