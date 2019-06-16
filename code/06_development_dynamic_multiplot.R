@@ -5,34 +5,46 @@ library(ggplot2)
 load("data/weapons.RData")
 wescolors <- wesanderson::wes_palette("Zissou1", 5)
 
-#### weapons time series ####
+#### A: weapons time series ####
+
+# calculate time series with method = "number"
 weapons_timeseries_number <- aoristAAR::aorist(
   weapons,
   split_vars = c(),
   from = "dating_typology_start",
   to = "dating_typology_end",
-  method = "number"
+  method = "number",
+  stepstart = -1000,
+  stepstop = -400
 ) %>%
   dplyr::transmute(
     date = date,
     number = sum
   )
 
+# calculate time series with method = "weight"
 weapons_timeseries_weight <- aoristAAR::aorist(
   weapons,
   split_vars = c(),
   from = "dating_typology_start",
   to = "dating_typology_end",
-  method = "weight"
+  method = "weight",
+  stepstart = -1000,
+  stepstop = -400
 ) %>%
   dplyr::transmute(
     date = date,
     weight = sum
   )
 
-weapons_timeseries <- dplyr::full_join(weapons_timeseries_number, weapons_timeseries_weight)
+# merge time series
+weapons_timeseries <- dplyr::full_join(
+  weapons_timeseries_number, 
+  weapons_timeseries_weight,
+  by = "date"
+)
 
-#### Plot A: Weapons time series ####
+#### Plot A: weapons time series ####
 A <- ggplot(weapons_timeseries, aes(x = date)) +
   geom_hline(
     yintercept = 0,
@@ -72,15 +84,24 @@ A <- ggplot(weapons_timeseries, aes(x = date)) +
     axis.text.y.right = element_text(color = wescolors[5])
   )
 
-  
-#### artefact classes ####
+#### B: artefact classes time series ####
+
+# remove artefacts without typological attribution and merge typology column
 artefacts <- weapons %>% dplyr::filter(
-  !is.na(typology_class_1), !is.na(typology_class_2), !is.na(typology_class_3), !is.na(typology_class_4)
+  !is.na(typology_class_2), 
+  !is.na(typology_class_3), 
+  !is.na(typology_class_4)
 ) %>%
   dplyr::mutate(
-    typology = paste(typology_class_1, typology_class_2, typology_class_3, typology_class_4, sep = "_")
+    typology = paste(
+      typology_class_2, 
+      typology_class_3, 
+      typology_class_4, 
+      sep = "_"
+    )
   )
 
+# reduce dataset to relevant variables
 classes <- artefacts %>%
   dplyr::group_by(
     dating_typology_start, dating_typology_end, typology
@@ -88,20 +109,25 @@ classes <- artefacts %>%
   dplyr::summarise() %>%
   dplyr::ungroup()
 
+# calculate time series
 classes_timeseries <- aoristAAR::aorist(
   classes,
   split_vars = c(),
   from = "dating_typology_start",
   to = "dating_typology_end",
-  method = "number"
+  method = "number",
+  stepstart = -1000,
+  stepstop = -400
 )
 
 ct <- classes_timeseries
+
+# replace NA with 0
 ct$sum <- tidyr::replace_na(ct$sum, 0)
 
+# calculate spline
 spline_model <- smooth.spline(ct$date, ct$sum, spar = 0.7)
 prediction_spline <- predict(spline_model, ct$date)
-
 spline <- tibble::tibble(
   date = prediction_spline$x,
   pred = prediction_spline$y
@@ -110,7 +136,7 @@ spline <- tibble::tibble(
 classes_timeseries$name <- "Artefact classes number"
 spline$name <- "Cubic smoothing spline (spar = 0.5)"
 
-#### Plot B: number of classes per year + spline ####
+#### Plot B: artefact classes time series ####
 B <- ggplot() +
   geom_hline(
     yintercept = 0,
@@ -146,15 +172,16 @@ B <- ggplot() +
     values = c(0.5, 1.3)
   )
 
-#### derivative ####
-prediction_deriv <- predict(spline_model, ct$date, deriv = 1)
+#### C: derivative ####
 
+# calculate derivative of spline
+prediction_deriv <- predict(spline_model, ct$date, deriv = 1)
 deri <- tibble::tibble(
   date = prediction_deriv$x,
   deriv = prediction_deriv$y
 )
 
-#### Plot C: derivative of spline ####
+#### Plot C: derivative ####
 C <- ggplot(deri) +
   geom_hline(
     yintercept = 0,
@@ -183,7 +210,9 @@ C <- ggplot(deri) +
     values = wescolors[1]
   ) 
 
-#### cultural distance from one timestep to the next ####
+#### cultural distance decades ####
+
+# calculate time series
 artefacts_timeseries <- aoristAAR::aorist(
   artefacts,
   split_vars = c("typology"),
@@ -195,11 +224,13 @@ artefacts_timeseries <- aoristAAR::aorist(
   method = "number"
 )
 
+# transform data from wide to long
 df <- artefacts_timeseries %>%
   tidyr::spread(
     key = typology, value = sum
   )
 
+# remove column date and replace NA with 0
 ma <- df %>%
   dplyr::select(
     -date
@@ -207,23 +238,27 @@ ma <- df %>%
   as.matrix() %>%
   tidyr::replace_na(0)
 
+# expriments with different corrections
 ma_corr <- ma# %>%
   #quantAAR::booleanize()
 
+# calculate euclidian distance
 distance_timesteps <- c()
 for (i in 1:(nrow(ma_corr) - 1)) {
   distance_timesteps[i] <- dist(ma_corr[c(i, i+1),])
 }
 
+# create nice distance dataset
 distance <- tibble::tibble(
   start = df$date[-length(df$date)],
   end = df$date[-1],
   mean = (start + end)/2,
   ed = distance_timesteps,
+  # cumulutive sum of euclidian distance
   cumsum_ed = cumsum(ed)
 )
 
-#### Plot D: cultural distance from one timestep to the next ####
+#### Plot D: cultural distance decades ####
 D <- ggplot() +
   geom_hline(
     yintercept = 0,
@@ -291,4 +326,3 @@ ggsave(
   units = "mm",
   dpi = 300
 )
-
