@@ -7,11 +7,31 @@ library(viridis)
 # load data
 load("data/weapons.RData")
 
-# remove artefacts with no information in typology_class_4
+# remove artefacts with no information in typology_class_2, 3 or 4
 artefacts <- weapons %>%
   dplyr::filter(
+    !is.na(typology_class_2),
+    !is.na(typology_class_3),
     !is.na(typology_class_4)
   )
+
+# count artefacts and remove artefact categories with less than 10 values 
+artefacts <- artefacts %>% 
+  dplyr::group_by(
+    typology_class_2, typology_class_3, typology_class_4
+  ) %>%
+  dplyr::mutate(
+    n = dplyr::n()
+  ) %>% 
+  dplyr::filter(
+    n >= 10
+  ) %>%
+  dplyr::ungroup()
+
+# check if class_2 + class_4 yields the same number of classes as class_2 + class_3 + class_4
+# that means class_3 can be ignored
+nrow(unique(artefacts %>% dplyr::select(typology_class_2, typology_class_4))) ==
+  nrow(unique(artefacts %>% dplyr::select(typology_class_2, typology_class_3, typology_class_4)))
 
 # create a variable that combines typology_class_2 and typology_class_4
 artefacts <- artefacts %>%
@@ -22,19 +42,6 @@ artefacts <- artefacts %>%
       as.character(typology_class_2)
     )
   )
-
-# count artefacts and remove artefact categories with less than 10 values 
-artefacts <- artefacts %>% 
-  dplyr::group_by(
-    typology_fine
-  ) %>%
-  dplyr::mutate(
-    n = dplyr::n()
-  ) %>% 
-  dplyr::filter(
-    n >= 10
-  ) %>%
-  dplyr::ungroup()
 
 # count again for the plot
 type_fine_amount <- artefacts %>% 
@@ -51,7 +58,8 @@ artefact_timeseries_df <- aoristAAR::aorist(
   artefacts,
   split_vars = c("typology_class_2", "typology_fine"),
   from = "dating_typology_start",
-  to = "dating_typology_end"
+  to = "dating_typology_end",
+  method = "weight"
 )
 
 # remove time steps without information
