@@ -7,7 +7,7 @@ library(viridis)
 # load data
 load("data/weapons.RData")
 
-# remove artefacts with no information in typology_class_2, 3 or 4
+# remove artefacts without full typological attribution
 artefacts <- weapons %>%
   dplyr::filter(
     !is.na(typology_class_2),
