@@ -86,25 +86,45 @@ A <- ggplot(weapons_timeseries, aes(x = date)) +
 
 #### B: artefact classes time series ####
 
-# remove artefacts without typological attribution and merge typology column
+# remove artefacts without full typological attribution
 artefacts <- weapons %>% dplyr::filter(
   !is.na(typology_class_2), 
   !is.na(typology_class_3), 
   !is.na(typology_class_4)
-) %>%
+)
+  
+# count artefacts and remove artefact categories with less than 10 values 
+artefacts <- artefacts %>% 
+  dplyr::group_by(
+    typology_class_2, typology_class_3, typology_class_4
+  ) %>%
   dplyr::mutate(
-    typology = paste(
-      typology_class_2, 
-      typology_class_3, 
-      typology_class_4, 
-      sep = "_"
+    n = dplyr::n()
+  ) %>% 
+  dplyr::filter(
+    n >= 10
+  ) %>%
+  dplyr::ungroup()
+
+# check if class_2 + class_4 yields the same number of classes as class_2 + class_3 + class_4
+# that means class_3 can be ignored
+nrow(unique(artefacts %>% dplyr::select(typology_class_2, typology_class_4))) ==
+  nrow(unique(artefacts %>% dplyr::select(typology_class_2, typology_class_3, typology_class_4)))
+
+# create a variable that combines typology_class_2 and typology_class_4
+artefacts <- artefacts %>%
+  dplyr::mutate(
+    typology_fine = ifelse(
+      !is.na(typology_class_4), 
+      stringr::str_trunc(paste0(typology_class_2, " ~ ", typology_class_4), 40), 
+      as.character(typology_class_2)
     )
   )
 
 # reduce dataset to relevant variables
 classes <- artefacts %>%
   dplyr::group_by(
-    dating_typology_start, dating_typology_end, typology
+    dating_typology_start, dating_typology_end, typology_fine
   ) %>%
   dplyr::summarise() %>%
   dplyr::ungroup()
@@ -215,7 +235,7 @@ C <- ggplot(deri) +
 # calculate time series
 artefacts_timeseries <- aoristAAR::aorist(
   artefacts,
-  split_vars = c("typology"),
+  split_vars = c("typology_fine"),
   stepwidth = 10,
   stepstart = -1000,
   stepstop = -400,
@@ -227,7 +247,7 @@ artefacts_timeseries <- aoristAAR::aorist(
 # transform data from wide to long
 df <- artefacts_timeseries %>%
   tidyr::spread(
-    key = typology, value = sum
+    key = typology_fine, value = sum
   )
 
 # remove column date and replace NA with 0
