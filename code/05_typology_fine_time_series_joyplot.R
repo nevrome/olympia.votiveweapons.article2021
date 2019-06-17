@@ -28,6 +28,25 @@ artefacts <- artefacts %>%
   ) %>%
   dplyr::ungroup()
 
+# factor order for better colour coding in plot
+artefacts <- artefacts %>% 
+  dplyr::mutate(
+    typology_class_2 = factor(typology_class_2, levels = c(
+      "Helmet",
+      "Helmet accessories",
+      "Shield and accessories",
+      "Greave",
+      "Lance head (bronze)",
+      "Lance head (iron)",
+      "Spear head (bronze)",
+      "Spear head (iron)",
+      "Stick head",
+      "Sauroter",
+      "Arrow head"
+    )
+  )
+)
+
 # check if class_2 + class_4 yields the same number of classes as class_2 + class_3 + class_4
 # that means class_3 can be ignored
 nrow(unique(artefacts %>% dplyr::select(typology_class_2, typology_class_4))) ==
