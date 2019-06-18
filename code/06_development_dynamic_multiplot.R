@@ -321,9 +321,10 @@ D <- ggplot() +
     legend.direction = "horizontal",
     legend.text = element_text(size = 8),
     legend.title = element_text(size = 8),
-    legend.background = element_rect(fill = "white")
+    legend.background = element_rect(fill = "white"),
+    axis.title.y = element_text(hjust = -0.1)
   ) +
-  ylab("Cumulated distance") +
+  ylab(expression("Cumulative distance")) +
   xlab("Year BC") +
   guides(
     fill = guide_colorbar(
