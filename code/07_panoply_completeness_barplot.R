@@ -86,7 +86,7 @@ A <- equip_artefacts %>%
       y = -50,
       label = sum
     ),
-    size = 2.5,
+    size = 3.3,
     fill = "darkgrey",
     color = "white"
   ) +
@@ -113,7 +113,7 @@ A <- equip_artefacts %>%
 
 #### further data preparation: segregation by time ####
 
-# calculate temporal distribution with aoristAAR
+# calculate time series with aoristAAR
 equip_time <- aoristAAR::aorist(
   equip_artefacts, 
   from = "dating_typology_start", 
@@ -189,7 +189,7 @@ B <- equip_time_count_greave %>% ggplot() +
   )
 
 #### combine plots ####
-p <- cowplot::plot_grid(A, B, labels = "AUTO", ncol = 1, rel_heights = c(0.3, 1))
+p <- cowplot::plot_grid(A, B, labels = "AUTO", ncol = 1, rel_heights = c(0.4, 1))
 
 ggsave(
   filename = "07_panoply_completeness.png",
