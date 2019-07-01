@@ -1,6 +1,9 @@
 library(magrittr)
 library(ggplot2)
 
+#### plot A: schematic panoply ####
+A <- cowplot::ggdraw() + cowplot::draw_image("data/panoply.svg", scale = 1.2)
+
 #### data preparation ####
 
 # colour palette
@@ -70,8 +73,8 @@ equip_count_general <- equip_artefacts %>%
     sum = dplyr::n()
   )
 
-#### plot A: simple panoply artefact distribution ####
-A <- equip_artefacts %>%
+#### plot B: simple panoply artefact distribution ####
+B <- equip_artefacts %>%
   ggplot() +
   geom_bar(
     aes(
@@ -86,14 +89,15 @@ A <- equip_artefacts %>%
       y = -50,
       label = sum
     ),
-    size = 3.3,
+    size = 3.7,
     fill = "darkgrey",
     color = "white"
   ) +
   theme_bw() +
   theme(
-    axis.text.y = element_text(hjust = 0, size = 10),
-    axis.title.x = element_text(size = 10),
+    axis.text = element_text(size = 12),
+    axis.text.y = element_text(hjust = 0),
+    axis.title.x = element_text(size = 12),
     legend.position = "bottom"
   ) +
   xlab("") +
@@ -148,8 +152,8 @@ equip_time_count_greave <- equip_time_red %>%
     sum = sum(sum)
   )
 
-#### plot B: segregation by time steps ####
-B <- equip_time_count_greave %>% ggplot() +
+#### plot C: segregation by time steps ####
+C <- equip_time_count_greave %>% ggplot() +
   facet_wrap(~date) +
   geom_bar(
     aes(
@@ -166,14 +170,15 @@ B <- equip_time_count_greave %>% ggplot() +
       y = -110,
       label = sum
     ),
-    size = 2.5,
+    size = 3,
     fill = "darkgrey",
     color = "white"
   ) +
   theme_bw() +
   theme(
-    axis.text.y = element_text(hjust = 0, size = 10),
-    axis.title.x = element_text(size = 10),
+    axis.text = element_text(size = 12),
+    axis.text.y = element_text(hjust = 0),
+    axis.title.x = element_text(size = 12),
     legend.position = "bottom"
   ) +
   xlab("") +
@@ -189,15 +194,17 @@ B <- equip_time_count_greave %>% ggplot() +
   )
 
 #### combine plots ####
-p <- cowplot::plot_grid(A, B, labels = "AUTO", ncol = 1, rel_heights = c(0.4, 1))
+top_row <- cowplot::plot_grid(A, B, labels = c('A', 'B'), align = 'h', rel_widths = c(0.5, 1))
+
+p <- cowplot::plot_grid(top_row, C, labels = c('', 'C'), ncol = 1, rel_heights = c(0.4, 1))
 
 ggsave(
   filename = "07_panoply_completeness.png",
   plot = p,
   device = "png",
   path = "plots",
-  width = 200,
-  height = 240,
+  width = 240,
+  height = 290,
   units = "mm",
   dpi = 300
 )
