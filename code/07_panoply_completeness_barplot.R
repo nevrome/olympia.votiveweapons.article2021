@@ -38,6 +38,7 @@ artefacts %<>%
       typology_class_2 == "Arm guard" ~ "Arm guard",
       typology_class_2 == "Greave" ~ "Greave",
       typology_class_2 == "Ankle guard" ~ "Ankle guard",
+      typology_class_2 == "Foot guard" ~ "Foot guard",
       TRUE ~ NA_character_
     )
   )
@@ -60,7 +61,8 @@ equip_artefacts$equipment_type <- factor(
     "Sauroter",
     "Shield(fragment)",
     "Greave",
-    "Ankle guard"
+    "Ankle guard",
+    "Foot guard"
   ) %>% rev
 )
 
@@ -179,7 +181,9 @@ C <- equip_time_count_greave %>% ggplot() +
     axis.text = element_text(size = 12),
     axis.text.y = element_text(hjust = 0),
     axis.title.x = element_text(size = 12),
-    legend.position = "bottom"
+    legend.position = "bottom",
+    legend.text = element_text(size = 12),
+    legend.title = element_text(size = 12)
   ) +
   xlab("") +
   ylab("Number of artefacts") +
