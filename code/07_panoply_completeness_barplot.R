@@ -2,7 +2,7 @@ library(magrittr)
 library(ggplot2)
 
 #### plot A: schematic panoply ####
-A <- cowplot::ggdraw() + cowplot::draw_image("data/panoply.svg", scale = 1.2)
+A <- cowplot::ggdraw() + cowplot::draw_image("data/panoply.svg", scale = 1.1)
 
 #### data preparation ####
 
