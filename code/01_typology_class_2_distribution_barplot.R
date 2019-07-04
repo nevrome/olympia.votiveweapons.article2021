@@ -12,10 +12,6 @@ artefacts <- weapons_unfiltered
 
 # artefact type count considering a classified dating variable
 type_count <- artefacts %>%
-  # remove artefacts without typological attribution
-  dplyr::filter(
-    !is.na(typology_class_2)
-  ) %>%
   # classify dating information
   dplyr::mutate(
     dated = dplyr::case_when(
@@ -40,9 +36,6 @@ type_count$dated <- factor(type_count$dated, levels = c(
 
 # general artefact type count
 general_count <- artefacts %>%
-  dplyr::filter(
-    !is.na(typology_class_2)
-  ) %>%
   dplyr::group_by(
     typology_class_2
   ) %>%

@@ -171,21 +171,27 @@ weapon_artefacts %<>%
 #### create relevant subset for this paper and store them ####
 
 # unfiltered
-weapons_unfiltered <- weapon_artefacts
+weapons_unfiltered <- weapon_artefacts %>%
+  dplyr::filter(
+    !is.na(typology_class_2)
+  )
 save(weapons_unfiltered, file = "data/weapons_unfiltered.RData")
 
-# filtered by time and area
+# filtered by time, type and area
 weapons <- weapon_artefacts %>%
   dplyr::filter(
     # type
     typology_class_1 == "Waffe" &
-      # area
-      !is.na(find_area) &
-      # dating
-      !is.na(dating_typology_start) &
-      !is.na(dating_typology_end) &
-      dating_typology_start < -400 & 
-      dating_typology_end > -1000
+    !is.na(typology_class_2) & 
+    !is.na(typology_class_3) &
+    !is.na(typology_class_4) &
+    # area
+    !is.na(find_area) &
+    # dating
+    !is.na(dating_typology_start) &
+    !is.na(dating_typology_end) &
+    dating_typology_start < -400 & 
+    dating_typology_end > -1000
   )
 save(weapons, file = "data/weapons.RData")
 

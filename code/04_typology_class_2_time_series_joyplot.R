@@ -5,9 +5,7 @@ library(ggplot2)
 
 # load data
 load("data/weapons.RData")
-artefacts <- weapons %>% dplyr::filter(
-  !is.na(typology_class_2)
-)
+artefacts <- weapons
 
 # count by artefact category
 types_amount <- artefacts %>% 

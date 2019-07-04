@@ -86,12 +86,7 @@ A <- ggplot(weapons_timeseries, aes(x = date)) +
 
 #### B: artefact classes time series ####
 
-# remove artefacts without full typological attribution
-artefacts <- weapons %>% dplyr::filter(
-  !is.na(typology_class_2), 
-  !is.na(typology_class_3), 
-  !is.na(typology_class_4)
-)
+artefacts <- weapons
   
 # count artefacts and remove artefact categories with less than 10 values 
 artefacts <- artefacts %>% 
