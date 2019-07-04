@@ -61,7 +61,7 @@ p <- ggplot() +
       "Zissou1", 
       type = "continuous"
     ),
-    limits = c(0, 800)
+    limits = c(0, 850)
   ) +
   guides(
     fill = guide_colorbar(title = "Number of Artefacts")
