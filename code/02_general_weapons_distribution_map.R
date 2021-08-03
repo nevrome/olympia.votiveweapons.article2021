@@ -43,13 +43,28 @@ artefacts_per_area <- artefacts %>%
 areas_artefacts <- site_areas %>% 
   dplyr::left_join(artefacts_per_area, by = c("area_name" = "find_area"))
 
+# compile centroid coordinates of polygons for labels
+area_label_positions <- areas_artefacts %>%
+  sf::st_centroid() %>%
+  dplyr::mutate(
+    x = sf::st_coordinates(.)[,1],
+    y = sf::st_coordinates(.)[,2]
+  ) %>%
+  sf::st_drop_geometry() %>%
+  # replace Alpheios coordinates
+  dplyr::mutate(
+    x = ifelse(area_name == "Alpheios", 555900, x),
+    y = ifelse(area_name == "Alpheios", 4165850, y)
+  )
+
 #### plot ####
 p <- ggplot() +
   ggspatial::layer_spatial(background_map_low_res) +
   geom_sf(
     data = areas_artefacts,
     mapping = aes(fill = n),
-    alpha = 0.5
+    alpha = 0.5,
+    size = 1
   ) +
   coord_sf(
     xlim = c(555350, 556030),
@@ -66,16 +81,11 @@ p <- ggplot() +
   guides(
     fill = guide_colorbar(title = "Number of Artefacts")
   ) +
-  geom_sf_label(
-    data = areas_artefacts,
-    mapping = aes(label = area_name),
-    size = 3,
-    alpha = 0.5
-  ) +
-  geom_label(
-    mapping = aes(x = 555875, y = 4165850, label = "Alpheios"),
-    size = 3.5,
-    alpha = 0.5
+  ggrepel::geom_label_repel(
+    data = area_label_positions,
+    mapping = aes(x = x, y = y, label = area_name),
+    size = 5.5,
+    alpha = 0.6
   ) +
   theme_bw() +
   theme(
