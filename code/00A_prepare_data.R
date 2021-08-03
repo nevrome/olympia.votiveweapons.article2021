@@ -78,10 +78,14 @@ olympia_artefacts_3 %<>% tibble::add_column(
   -dating_typology_end_century,
   -dating_typology_end_century_section,
   -dating_typology_end_sign
-)
+) %>%
+  # fixed overlapping time windows issue
+  dplyr::mutate(
+    dating_typology_start = dating_typology_start + 1
+  )
 
 # find_area
-# remove ambiguous values 
+# remove ambiguous values
 olympia_artefacts_3$find_area[grep("und|oder|\\?|\\,", olympia_artefacts_3$find_area)] <- NA_character_
 # simplification Southern Stadium area
 olympia_artefacts_3$find_area[olympia_artefacts_3$find_area %in% 
@@ -194,4 +198,3 @@ weapons <- weapon_artefacts %>%
     dating_typology_end > -1000
   )
 save(weapons, file = "data/weapons.RData")
-
