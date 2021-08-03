@@ -1,3 +1,8 @@
+# The main dataset (here "data/2019-03-28_Olympia_DB.csv") can not be shared for this
+# publication, so only the two derived datasets 'weapons' and 'weapons_unfiltered'
+# are available in this repository with the files "data/weapons.tsv" and
+# "data/weapons_unfiltered.tsv"
+
 library(magrittr)
 
 #### read raw database export ####
@@ -179,7 +184,14 @@ weapons_unfiltered <- weapon_artefacts %>%
   dplyr::filter(
     !is.na(typology_class_2)
   )
-save(weapons_unfiltered, file = "data/weapons_unfiltered.RData")
+readr::write_tsv(
+  weapons_unfiltered,
+  file = "data/weapons_unfiltered.tsv"
+)
+save(
+  weapons_unfiltered, 
+  file = "data/weapons_unfiltered.RData"
+)
 
 # filtered by time, type and area
 weapons <- weapon_artefacts %>%
@@ -197,4 +209,11 @@ weapons <- weapon_artefacts %>%
     dating_typology_start < -400 & 
     dating_typology_end > -1000
   )
-save(weapons, file = "data/weapons.RData")
+readr::write_tsv(
+  weapons,
+  file = "data/weapons.tsv"
+)
+save(
+  weapons, 
+  file = "data/weapons.RData"
+)
