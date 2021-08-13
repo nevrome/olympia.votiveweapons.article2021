@@ -74,7 +74,7 @@ artefact_timeseries %<>%
 p <- ggplot() +
   ggridges::geom_density_ridges(
     data = artefact_timeseries,
-    mapping = aes(x = date, y = typology_class_2, height = sum, fill = n),
+    mapping = aes(x = date, y = typology_class_2, height = sum),
     stat = "identity",
     alpha = 0.5,
     size = 0.2,
@@ -86,18 +86,10 @@ p <- ggplot() +
   ) +
   geom_label(
     data = types_amount,
-    mapping = aes(x = -800, y = typology_class_2, label = n, fill = n),
+    mapping = aes(x = -800, y = typology_class_2, label = n),
     size = 4,
-    color = "white"
-  ) +
-  scale_fill_gradientn(
-    colours = wesanderson::wes_palette(
-      "Zissou1", 
-      type = "continuous"
-    )
-  ) +
-  guides(
-    fill = guide_colorbar(title = "Number of Artefacts")
+    color = "white",
+    fill = "grey"
   ) +
   theme_bw() +
   theme(
@@ -106,7 +98,6 @@ p <- ggplot() +
     legend.key.width = unit(1.5, "cm"),
     legend.title = element_text(size = 15),
     legend.text = element_text(size = 13),
-    plot.margin = unit(c(0.5,0.5,4,0.5), "lines"),
     legend.position = c(0.11, -0.16),
     legend.direction = "horizontal"
   ) +

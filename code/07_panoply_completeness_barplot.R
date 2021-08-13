@@ -116,7 +116,14 @@ B <- equip_artefacts %>%
     na.value = "darkgrey"
   ) +
   guides(
-    fill = FALSE
+    fill = "none"
+  ) +
+  annotate(
+    "text", 
+    x = "Shield(fragment)", y = 320, 
+    label = "Fragments often do not represent complete shields!",
+    color = "white",
+    size = 3.2
   )
 
 #### further data preparation: segregation by time ####
@@ -194,7 +201,7 @@ C <- ggplot() +
   ) +
   guides(
     colour = guide_legend(override.aes = list(size = 5))
-  )
+  ) 
 
 #### combine plots ####
 top_row <- cowplot::plot_grid(A, B, labels = c('A', 'B'), align = 'h', rel_widths = c(0.5, 1))

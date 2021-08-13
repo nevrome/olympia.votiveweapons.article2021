@@ -95,7 +95,7 @@ p <- ggplot() +
     strip.background = element_rect(fill = NA)
   ) +
   guides(
-    fill = guide_colorbar(title = "Number of artefacts")
+    fill = guide_colorbar(title = "Maximum potential number of artefacts")
   )
 
 ggsave(

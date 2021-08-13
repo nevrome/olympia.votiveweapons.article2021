@@ -57,10 +57,10 @@ A <- ggplot(weapons_timeseries, aes(x = date)) +
     linetype = 3
   ) +
   geom_line(
-    mapping = aes(y = number, colour = "Artefact number")
+    mapping = aes(y = number, colour = "Maximum number of artefacts")
   ) +
   geom_line(
-    mapping = aes(y = weight * (max(weapons_timeseries_number$number) / max(weapons_timeseries_weight$weight)), colour = "Corrected artefact weight"),
+    mapping = aes(y = weight * (max(weapons_timeseries_number$number) / max(weapons_timeseries_weight$weight)), colour = "Weight corrected artefact distribution"),
     linetype = "dashed",
     size = 0.5
   ) +
@@ -146,8 +146,8 @@ spline <- tibble::tibble(
   pred = prediction_spline$y
 )
 
-classes_timeseries$name <- "Artefact classes number"
-spline$name <- "Cubic smoothing spline (spar = 0.5)"
+classes_timeseries$name <- "Maximum number of artefact classes"
+spline$name <- "Smoothing spline (cubic, spar = 0.5)"
 
 #### Plot B: artefact classes time series ####
 B <- ggplot() +
