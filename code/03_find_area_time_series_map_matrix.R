@@ -32,6 +32,8 @@ artefact_timeseries_per_area_number_df <-  aoristAAR::aorist(
   split_vars = c("find_area"),
   from = "dating_typology_start",
   to = "dating_typology_end",
+  stepstart = -1000,
+  stepstop = -400,
   method = "number"
 )
 
@@ -100,7 +102,7 @@ p <- ggplot() +
   )
 
 ggsave(
-  filename = "03_find_area_time_series_map.png",
+  filename = "03_find_area_time_series_map2.png",
   plot = p,
   device = "png",
   path = "plots/",

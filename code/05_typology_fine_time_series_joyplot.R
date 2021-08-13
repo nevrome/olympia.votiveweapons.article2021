@@ -71,12 +71,9 @@ artefact_timeseries_df <- aoristAAR::aorist(
   split_vars = c("typology_class_2", "typology_fine"),
   from = "dating_typology_start",
   to = "dating_typology_end",
+  stepstart = -1000,
+  stepstop = -400,
   method = "weight"
-)
-
-# remove time steps without information
-artefact_timeseries_df %<>% dplyr::filter(
-  sum != 0
 )
 
 # find centers of category distributions
@@ -127,7 +124,9 @@ p <- ggplot() +
     data = artefact_timeseries,
     mapping = aes(x = date, y = typology_fine, height = sum, fill = typology_class_2),
     stat = "identity",
-    alpha = 0.5
+    alpha = 0.5,
+    size = 0.2,
+    scale = 0.95
   ) +
   geom_point(
     data = typology_fine_centers,
@@ -169,7 +168,7 @@ p <- ggplot() +
   )
 
 ggsave(
-  filename = "05_typology_fine_time_series.png",
+  filename = "05_typology_fine_time_series2.png",
   plot = p,
   device = "png",
   path = "plots",
