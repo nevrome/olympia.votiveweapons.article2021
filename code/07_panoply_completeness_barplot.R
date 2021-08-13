@@ -2,7 +2,8 @@ library(magrittr)
 library(ggplot2)
 
 #### plot A: schematic panoply ####
-image <- magick::image_read_svg("data/panoply.svg", width = 1000)
+image <- magick::image_read_svg("data/panoply.svg", width = 1000) %>%
+  magick::image_background(color = "white")
 A <- cowplot::ggdraw() + cowplot::draw_image(image, scale = 1.1)
 
 #### data preparation ####
@@ -120,7 +121,8 @@ B <- equip_artefacts %>%
 
 #### further data preparation: segregation by time ####
 
-equip_count_general <- equip_artefacts %>%
+# count number of artefacts per type
+equip_count <- equip_artefacts %>%
   dplyr::group_by(
     equipment_type, greave_orientation
   ) %>%
@@ -128,6 +130,7 @@ equip_count_general <- equip_artefacts %>%
     sum = dplyr::n()
   )
 
+# get aoristic weights per year
 equip_time <- aoristAAR::aorist(
   equip_artefacts, 
   from = "dating_typology_start", 
@@ -138,6 +141,7 @@ equip_time <- aoristAAR::aorist(
   method = "weight"
 )
 
+# sample per type from weight distributions
 equip_sample <- equip_time %>% dplyr::group_split(
   equipment_type, greave_orientation
 ) %>% 
@@ -148,9 +152,9 @@ equip_sample <- equip_time %>% dplyr::group_split(
         greave_orientation = x$greave_orientation[1],
         date_sampled = sample(
           x = x$date, 
-          size = equip_count_general$sum[
-            equip_count_general$equipment_type == equipment_type & 
-              equip_count_general$greave_orientation == greave_orientation],
+          size = equip_count$sum[
+            equip_count$equipment_type == equipment_type & 
+              equip_count$greave_orientation == greave_orientation],
           prob = x$sum,
           replace = TRUE
         )
@@ -160,23 +164,13 @@ equip_sample <- equip_time %>% dplyr::group_split(
   ) %>%
   dplyr::bind_rows()
 
-# remove information outside of the relevant time window
-equip_time_red <- equip_time_ranges %>%
-  dplyr::filter(
-    date_start >= -800
-  )
-
-#### plot C: segregation by time steps ####
+#### plot C: possible sample ####
 C <- ggplot() +
   geom_jitter(
     data = equip_sample,
     aes(x = date_sampled, y = equipment_type, colour = greave_orientation),
-    size = 1, height = 0.2
+    size = 1, height = 0.3
   ) +
-  # geom_label(
-  #   data = equip_time_red %>% dplyr::filter(number > 0),
-  #   aes(x = (date_start+date_end)/2, y = equipment_type, label = number)
-  # ) +
   theme_bw() +
   theme(
     axis.text = element_text(size = 12),
@@ -186,8 +180,8 @@ C <- ggplot() +
     legend.text = element_text(size = 12),
     legend.title = element_text(size = 12)
   ) +
-  xlab("") +
-  ylab("Number of artefacts") +
+  xlab("Year BC") +
+  ylab("") +
   scale_alpha_continuous(
     range = c(0.1,1)
   ) +
@@ -196,12 +190,15 @@ C <- ggplot() +
     values = wescolors[c(1,4)],
     name = "Orientation",
     na.value = "darkgrey"
+  ) +
+  guides(
+    colour = guide_legend(override.aes = list(size = 5))
   )
 
 #### combine plots ####
 top_row <- cowplot::plot_grid(A, B, labels = c('A', 'B'), align = 'h', rel_widths = c(0.5, 1))
 
-p <- cowplot::plot_grid(top_row, C, labels = c('', 'C'), ncol = 1, rel_heights = c(0.6, 1))
+p <- cowplot::plot_grid(top_row, C, labels = c('', 'C'), ncol = 1, rel_heights = c(0.5, 0.8))
 
 ggsave(
   filename = "07_panoply_completeness2.png",
@@ -209,7 +206,7 @@ ggsave(
   device = "png",
   path = "plots",
   width = 240,
-  height = 240,
+  height = 230,
   units = "mm",
   dpi = 300
 )
