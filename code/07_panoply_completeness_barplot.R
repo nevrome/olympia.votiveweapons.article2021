@@ -2,7 +2,8 @@ library(magrittr)
 library(ggplot2)
 
 #### plot A: schematic panoply ####
-A <- cowplot::ggdraw() + cowplot::draw_image("data/panoply.svg", scale = 1.1)
+image <- magick::image_read_svg("data/panoply.svg", width = 1000)
+A <- cowplot::ggdraw() + cowplot::draw_image(image, scale = 1.1)
 
 #### data preparation ####
 
@@ -31,7 +32,7 @@ artefacts %<>%
         "Lance head (iron)",
         "Spear head (iron)",
         "Stick head"
-      ) ~ "Lance or Spear",
+      ) ~ "Lance or Spear head",
       typology_class_2 == "Sauroter" ~ "Sauroter",
       typology_class_2 == "Mitra" ~ "Mitra",
       typology_class_2 == "Cuirass" ~ "Cuirass",
@@ -57,7 +58,7 @@ equip_artefacts$equipment_type <- factor(
     "Cuirass",
     "Mitra",
     "Arm guard",
-    "Lance or Spear",
+    "Lance or Spear head",
     "Sauroter",
     "Shield(fragment)",
     "Greave",
@@ -119,7 +120,14 @@ B <- equip_artefacts %>%
 
 #### further data preparation: segregation by time ####
 
-# calculate time series with aoristAAR
+equip_count_general <- equip_artefacts %>%
+  dplyr::group_by(
+    equipment_type, greave_orientation
+  ) %>%
+  dplyr::summarise(
+    sum = dplyr::n()
+  )
+
 equip_time <- aoristAAR::aorist(
   equip_artefacts, 
   from = "dating_typology_start", 
@@ -127,55 +135,48 @@ equip_time <- aoristAAR::aorist(
   split_vars = c("equipment_type", "greave_orientation"),
   stepstart = -1000,
   stepstop = -400,
-  method = "number"
+  method = "weight"
 )
 
+equip_sample <- equip_time %>% dplyr::group_split(
+  equipment_type, greave_orientation
+) %>% 
+  Map(
+    function(x) {
+      tibble::tibble(
+        equipment_type = x$equipment_type[1],
+        greave_orientation = x$greave_orientation[1],
+        date_sampled = sample(
+          x = x$date, 
+          size = equip_count_general$sum[
+            equip_count_general$equipment_type == equipment_type & 
+              equip_count_general$greave_orientation == greave_orientation],
+          prob = x$sum,
+          replace = TRUE
+        )
+      )
+    },
+    .
+  ) %>%
+  dplyr::bind_rows()
+
 # remove information outside of the relevant time window
-equip_time_red <- equip_time %>%
+equip_time_red <- equip_time_ranges %>%
   dplyr::filter(
-    date %in% seq(-800, -400, 50)
-  )
-
-# count artefacts by year and type 
-equip_time_count <- equip_time_red %>%
-  dplyr::group_by(
-    date, equipment_type
-  ) %>%
-  dplyr::summarise(
-    sum = sum(sum)
-  )
-
-# count artefacts by year and type and greave orientation
-equip_time_count_greave <- equip_time_red %>%
-  dplyr::group_by(
-    date, equipment_type, greave_orientation
-  ) %>%
-  dplyr::summarise(
-    sum = sum(sum)
+    date_start >= -800
   )
 
 #### plot C: segregation by time steps ####
-C <- equip_time_count_greave %>% ggplot() +
-  facet_wrap(~date) +
-  geom_bar(
-    aes(
-      x = equipment_type,
-      y = sum,
-      fill = forcats::fct_rev(greave_orientation)
-    ),
-    stat = "identity"
+C <- ggplot() +
+  geom_jitter(
+    data = equip_sample,
+    aes(x = date_sampled, y = equipment_type, colour = greave_orientation),
+    size = 1, height = 0.2
   ) +
-  geom_label(
-    data = equip_time_count,
-    aes(
-      x = equipment_type,
-      y = -110,
-      label = sum
-    ),
-    size = 3,
-    fill = "darkgrey",
-    color = "white"
-  ) +
+  # geom_label(
+  #   data = equip_time_red %>% dplyr::filter(number > 0),
+  #   aes(x = (date_start+date_end)/2, y = equipment_type, label = number)
+  # ) +
   theme_bw() +
   theme(
     axis.text = element_text(size = 12),
@@ -187,10 +188,10 @@ C <- equip_time_count_greave %>% ggplot() +
   ) +
   xlab("") +
   ylab("Number of artefacts") +
-  coord_flip(
-    ylim = c(-150, 750)
+  scale_alpha_continuous(
+    range = c(0.1,1)
   ) +
-  scale_fill_manual(
+  scale_colour_manual(
     limits = c("left", "right"),
     values = wescolors[c(1,4)],
     name = "Orientation",
@@ -200,15 +201,15 @@ C <- equip_time_count_greave %>% ggplot() +
 #### combine plots ####
 top_row <- cowplot::plot_grid(A, B, labels = c('A', 'B'), align = 'h', rel_widths = c(0.5, 1))
 
-p <- cowplot::plot_grid(top_row, C, labels = c('', 'C'), ncol = 1, rel_heights = c(0.4, 1))
+p <- cowplot::plot_grid(top_row, C, labels = c('', 'C'), ncol = 1, rel_heights = c(0.6, 1))
 
 ggsave(
-  filename = "07_panoply_completeness.png",
+  filename = "07_panoply_completeness2.png",
   plot = p,
   device = "png",
   path = "plots",
   width = 240,
-  height = 290,
+  height = 240,
   units = "mm",
   dpi = 300
 )
