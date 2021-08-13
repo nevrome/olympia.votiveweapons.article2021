@@ -22,8 +22,6 @@ artefact_timeseries_df <- aoristAAR::aorist(
   split_vars = c("typology_class_2"),
   from = "dating_typology_start",
   to = "dating_typology_end",
-  stepstart = -1000,
-  stepstop = -400,
   method = "weight"
 )
 
@@ -88,7 +86,7 @@ p <- ggplot() +
   ) +
   geom_label(
     data = types_amount,
-    mapping = aes(x = -1000, y = typology_class_2, label = n, fill = n),
+    mapping = aes(x = -800, y = typology_class_2, label = n, fill = n),
     size = 4,
     color = "white"
   ) +
@@ -113,7 +111,7 @@ p <- ggplot() +
     legend.position = c(0.11, -0.16),
     legend.direction = "horizontal"
   ) +
-  xlim(-1000, -400) +
+  xlim(-800, -400) +
   xlab("Year BC") +
   ylab("")
   

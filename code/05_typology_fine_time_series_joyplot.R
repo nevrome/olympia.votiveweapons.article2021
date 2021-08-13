@@ -71,8 +71,6 @@ artefact_timeseries_df <- aoristAAR::aorist(
   split_vars = c("typology_class_2", "typology_fine"),
   from = "dating_typology_start",
   to = "dating_typology_end",
-  stepstart = -1000,
-  stepstop = -400,
   method = "weight"
 )
 
@@ -168,7 +166,7 @@ p <- ggplot() +
   )
 
 ggsave(
-  filename = "05_typology_fine_time_series2.png",
+  filename = "05_typology_fine_time_series.png",
   plot = p,
   device = "png",
   path = "plots",

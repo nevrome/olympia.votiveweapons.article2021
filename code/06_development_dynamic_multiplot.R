@@ -130,9 +130,7 @@ classes_timeseries <- aoristAAR::aorist(
   split_vars = c(),
   from = "dating_typology_start",
   to = "dating_typology_end",
-  method = "number",
-  stepstart = -1000,
-  stepstop = -400
+  method = "number"
 )
 
 ct <- classes_timeseries
@@ -232,8 +230,6 @@ artefacts_timeseries <- aoristAAR::aorist(
   artefacts,
   split_vars = c("typology_fine"),
   stepwidth = 10,
-  stepstart = -1000,
-  stepstop = -400,
   from = "dating_typology_start",
   to = "dating_typology_end",
   method = "number"
@@ -307,7 +303,7 @@ D <- ggplot() +
     breaks = c(0, 100, 200)
   ) +
   scale_size(range = c(0.3, 2), guide = FALSE) +
-  scale_x_continuous(breaks = seq(-1000, -400, 100), limits = c(-1000, -400)) +
+  scale_x_continuous(breaks = seq(-1000, -400, 100), limits = c(-1000, -399)) +
   ylim(0, max(distance$cumsum_ed)) +
   theme_bw() +
   theme(
