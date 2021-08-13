@@ -202,7 +202,7 @@ top_row <- cowplot::plot_grid(A, B, labels = c('A', 'B'), align = 'h', rel_width
 p <- cowplot::plot_grid(top_row, C, labels = c('', 'C'), ncol = 1, rel_heights = c(0.5, 0.8))
 
 ggsave(
-  filename = "07_panoply_completeness2.png",
+  filename = "07_panoply_completeness.png",
   plot = p,
   device = "png",
   path = "plots",

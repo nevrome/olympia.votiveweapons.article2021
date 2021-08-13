@@ -94,8 +94,7 @@ p <- ggplot() +
     colours = wesanderson::wes_palette(
       "Zissou1", 
       type = "continuous"
-    ),
-    limits = c(0, 850)
+    )
   ) +
   guides(
     fill = guide_colorbar(title = "Number of Artefacts")
