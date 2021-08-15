@@ -4,7 +4,7 @@ library(ggplot2)
 #### plot A: schematic panoply ####
 image <- magick::image_read_svg("data/panoply.svg", width = 1000) %>%
   magick::image_background(color = "white")
-A <- cowplot::ggdraw() + cowplot::draw_image(image, scale = 1.1)
+A <- cowplot::ggdraw() + cowplot::draw_image(image, scale = 1.3, valign = 0.75)
 
 #### data preparation ####
 
