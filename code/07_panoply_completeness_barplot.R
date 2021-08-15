@@ -128,53 +128,45 @@ B <- equip_artefacts %>%
 
 #### further data preparation: segregation by time ####
 
-# count number of artefacts per type
-equip_count <- equip_artefacts %>%
-  dplyr::group_by(
-    equipment_type, greave_orientation
-  ) %>%
-  dplyr::summarise(
-    sum = dplyr::n()
-  )
-
-# get aoristic weights per year
-equip_time <- aoristAAR::aorist(
-  equip_artefacts, 
-  from = "dating_typology_start", 
-  to = "dating_typology_end", 
-  split_vars = c("equipment_type", "greave_orientation"),
+equip_artefacts_timeseries <- aoristAAR::aorist(
+  equip_artefacts,
+  split_vars = c("equipment_type"),
+  from = "dating_typology_start",
+  to = "dating_typology_end",
   method = "weight"
-)
+) %>%
+  dplyr::group_by(
+    equipment_type
+  ) %>%
+  dplyr::mutate(
+    normalized_weight = sum/max(sum)
+  ) %>%
+  dplyr::ungroup()
 
 # sample per type from weight distributions
-equip_sample <- equip_time %>% dplyr::group_split(
-  equipment_type, greave_orientation
-) %>% 
-  Map(
-    function(x) {
-      tibble::tibble(
-        equipment_type = x$equipment_type[1],
-        greave_orientation = x$greave_orientation[1],
-        date_sampled = sample(
-          x = x$date, 
-          size = equip_count$sum[
-            equip_count$equipment_type == equipment_type & 
-              equip_count$greave_orientation == greave_orientation],
-          prob = x$sum,
-          replace = TRUE
-        )
-      )
-    },
-    .
-  ) %>%
-  dplyr::bind_rows()
+equip_sample <- equip_artefacts %>%
+  dplyr::mutate(
+    dating_sampled = Map(function(x, y) {
+        runif(1,x,y)
+      }, .$dating_typology_start, .$dating_typology_end
+    ) %>% unlist() %>% round()
+  )
 
 #### plot C: possible sample ####
 C <- ggplot() +
+  ggridges::geom_density_ridges(
+    data = equip_artefacts_timeseries,
+    mapping = aes(x = date, y = equipment_type, height = normalized_weight),
+    stat = "identity",
+    alpha = 0.5,
+    size = 0.2,
+    scale = 0.4,
+    position = position_nudge(y = 0.3)
+  ) +
   geom_jitter(
     data = equip_sample,
-    aes(x = date_sampled, y = equipment_type, colour = greave_orientation),
-    size = 1, height = 0.3
+    aes(x = dating_sampled, y = equipment_type, colour = greave_orientation),
+    size = 0.5, height = 0.15
   ) +
   theme_bw() +
   theme(
@@ -188,10 +180,8 @@ C <- ggplot() +
   xlab("Year BC") +
   ylab("") +
   coord_cartesian(
-    xlim = c(-800,-400)
-  ) +
-  scale_alpha_continuous(
-    range = c(0.1,1)
+    xlim = c(-800,-400),
+    ylim = c(1.3,equip_artefacts$equipment_type %>% unique %>% length() + 0.4)
   ) +
   scale_colour_manual(
     limits = c("left", "right"),
