@@ -101,18 +101,15 @@ artefacts <- artefacts %>%
   ) %>%
   dplyr::ungroup()
 
-# check if class_2 + class_4 yields the same number of classes as class_2 + class_3 + class_4
-# that means class_3 can be ignored
-nrow(unique(artefacts %>% dplyr::select(typology_class_2, typology_class_4))) ==
-  nrow(unique(artefacts %>% dplyr::select(typology_class_2, typology_class_3, typology_class_4)))
-
-# create a variable that combines typology_class_2 and typology_class_4
+# create a variable that combines typology_class_2, typology_class_3 and typology_class_4
 artefacts <- artefacts %>%
   dplyr::mutate(
-    typology_fine = ifelse(
-      !is.na(typology_class_4), 
-      stringr::str_trunc(paste0(typology_class_2, " ~ ", typology_class_4), 40), 
-      as.character(typology_class_2)
+    typology_fine = dplyr::case_when(
+      !is.na(typology_class_3) & !is.na(typology_class_4) ~ 
+        paste(typology_class_2, typology_class_3, typology_class_4, sep = " ~ "),
+      !is.na(typology_class_3) ~ 
+        paste(typology_class_2, typology_class_3, sep = " ~ "),
+      TRUE ~ as.character(typology_class_2)
     )
   )
 

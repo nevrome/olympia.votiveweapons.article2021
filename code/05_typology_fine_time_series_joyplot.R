@@ -26,7 +26,7 @@ artefacts <- artefacts %>%
   ) %>%
   dplyr::ungroup()
 
-# create a variable that combines typology_class_2 and typology_class_3
+# create a variable that combines typology_class_2, typology_class_3 and typology_class_4
 artefacts <- artefacts %>%
   dplyr::mutate(
     typology_fine = dplyr::case_when(
