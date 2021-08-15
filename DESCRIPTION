@@ -21,8 +21,6 @@ Imports:
     tibble (>= 2.0.1),
     tidyr (>= 0.8.3),
     tidyselect (>= 0.2.5),
-    viridis (>= 0.5.1),
-    wesanderson (>= 0.3.6),
-    zoo (>= 1.8-4)
+    wesanderson (>= 0.3.6)
 Remotes:
     ISAAKiel/aoristAAR
