@@ -10,6 +10,17 @@ wescolors <- wesanderson::wes_palette("Zissou1", 5)
 load("data/weapons_unfiltered.RData")
 artefacts <- weapons_unfiltered
 
+# merge categories
+artefacts <- artefacts %>%
+  dplyr::mutate(
+    typology_class_2 =
+      ifelse(
+        typology_class_2 %in% c("Helmet", "Helmet accessories"),
+        "Helmet and accessories",
+        as.character(typology_class_2)
+      )
+  )
+
 # artefact type count considering a classified dating variable
 type_count <- artefacts %>%
   # classify dating information

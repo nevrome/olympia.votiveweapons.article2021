@@ -7,6 +7,17 @@ library(ggplot2)
 load("data/weapons.RData")
 artefacts <- weapons
 
+# merge categories
+artefacts <- artefacts %>%
+  dplyr::mutate(
+    typology_class_2 =
+      ifelse(
+        typology_class_2 %in% c("Helmet", "Helmet accessories"),
+        "Helmet and accessories",
+        as.character(typology_class_2)
+      )
+  )
+
 # count by artefact category
 types_amount <- artefacts %>% 
   dplyr::group_by(
@@ -104,14 +115,14 @@ p <- ggplot() +
   xlim(-800, -400) +
   xlab("Year BC") +
   ylab("")
-  
+
 ggsave(
   filename = "04_typology_class_2_time_series.png",
   plot = p,
   device = "png",
   path = "plots",
   width = 200,
-  height = 180,
+  height = 150,
   units = "mm",
   dpi = 300
 )
