@@ -9,7 +9,7 @@ A <- cowplot::ggdraw() + cowplot::draw_image(image, scale = 1.13, valign = 0.75,
 #### data preparation ####
 
 # colour palette
-wescolors <- wesanderson::wes_palette("Zissou1", 5)
+wescolors <- wesanderson::wes_palette("Darjeeling1", 5)[c(1,5,4,2)]
 
 # load data
 load("data/weapons.RData")
@@ -91,7 +91,7 @@ equip_artefacts <- equip_artefacts %>%
     )
   ) %>%
   dplyr::mutate(
-    special = special %>% translate() %>% tidyr::replace_na("...")
+    special = special %>% translate() %>% tidyr::replace_na("\u229B")
   )
 
 # define artefact type level order
@@ -126,27 +126,25 @@ B <- equip_artefacts %>%
   facet_grid(rows = "equipment_type", scales = "free_y", space = "free_y", switch = "y") +
   geom_bar(
     aes(
-      x = special
+      x = special,
+      fill = special
     ),
-    position = position_dodge(width = 1),
-    fill = "darkgrey"
+    position = position_dodge(width = 1)
   ) +
-  # geom_label(
-  #   data = equip_count_general,
-  #   aes(
-  #     x = special,
-  #     y = -50,
-  #     label = sum,
-  #   ),
-  #   size = 3,
-  #   fill = "darkgrey",
-  #   color = "white",
-  #   position = position_dodge(width = 1)
-  # ) +
+  geom_text(
+    data = equip_count_general,
+    aes(
+      x = special,
+      y = -30,
+      label = sum,
+    ),
+    size = 3,
+    position = position_dodge(width = 1)
+  ) +
   theme_bw() +
   theme(
     axis.text = element_text(size = 11),
-    axis.text.y = element_text(hjust = 0),
+    axis.text.y = element_text(hjust = 0, size = 10),
     axis.title.x = element_text(size = 11),
     legend.position = "bottom",
     strip.text = element_text(size = 11)
@@ -154,12 +152,12 @@ B <- equip_artefacts %>%
   xlab("") +
   ylab("Number of artefacts") +
   coord_flip() +
-  # scale_fill_manual(
-  #   limits = c("left", "right"),
-  #   values = wescolors[c(1,4)],
-  #   name = "Orientation",
-  #   na.value = "darkgrey"
-  # ) +
+  scale_fill_manual(
+    limits = c("left", "right", "front", "back"),
+    values = wescolors,
+    name = "Orientation",
+    na.value = "darkgrey"
+  ) +
   guides(
     fill = "none"
   ) +
@@ -214,7 +212,7 @@ C <- ggplot() +
   ) +
   geom_jitter(
     data = equip_sample,
-    aes(x = dating_sampled, y = forcats::fct_rev(equipment_type), colour = greave_orientation),
+    aes(x = dating_sampled, y = forcats::fct_rev(equipment_type), colour = special),
     size = 0.5, height = 0.15
   ) +
   theme_bw() +
@@ -233,8 +231,8 @@ C <- ggplot() +
     ylim = c(1.3,equip_artefacts$equipment_type %>% unique %>% length() + 0.4)
   ) +
   scale_colour_manual(
-    limits = c("left", "right"),
-    values = wescolors[c(1,4)],
+    limits = c("left", "right", "front", "back"),
+    values = wescolors,
     name = "Orientation",
     na.value = "darkgrey"
   ) +
