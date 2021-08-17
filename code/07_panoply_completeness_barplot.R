@@ -153,7 +153,7 @@ B <- equip_artefacts %>%
   ylab("Number of artefacts") +
   coord_flip() +
   scale_fill_manual(
-    limits = c("left", "right", "front", "back"),
+    limits = c("right", "left", "front", "back"),
     values = wescolors,
     name = "Orientation",
     na.value = "darkgrey"
@@ -231,7 +231,7 @@ C <- ggplot() +
     ylim = c(1.3,equip_artefacts$equipment_type %>% unique %>% length() + 0.4)
   ) +
   scale_colour_manual(
-    limits = c("left", "right", "front", "back"),
+    limits = c("right", "left", "front", "back"),
     values = wescolors,
     name = "Orientation",
     na.value = "darkgrey"
