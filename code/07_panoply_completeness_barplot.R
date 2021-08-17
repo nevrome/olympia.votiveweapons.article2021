@@ -4,7 +4,7 @@ library(ggplot2)
 #### plot A: schematic panoply ####
 image <- magick::image_read_svg("data/panoply.svg", width = 1000) %>%
   magick::image_background(color = "white")
-A <- cowplot::ggdraw() + cowplot::draw_image(image, scale = 1.3, valign = 0.75)
+A <- cowplot::ggdraw() + cowplot::draw_image(image, scale = 1.13, valign = 0.75, halign = 0.6)
 
 #### data preparation ####
 
@@ -49,6 +49,23 @@ na_if_not <- function(x, y) {
   purrr::map_chr(x, function(z) { if (z %in% y) { z } else { NA_character_ } })
 }
 
+translate <- function(x) {
+  dplyr::case_when(
+    x == "Korinthischer Helm" ~ "Corinthian",
+    x == "Kegelhelm" ~ "Cone",
+    x == "Illyrischer Helm" ~ "Illyrian",
+    x == "Chalkidischer Helm" ~ "Chalcidian",
+    x == "Glockenpanzer, Rückenschale" ~ "back",
+    x == "Glockenpanzer, Brustschale" ~ "front",
+    x == "Schildbänder" ~ "straps",
+    x == "Aussenbeschläge (Nach Randornamenten)" ~ "fittings",
+    x == "Armbügel und deren Ansatzplatten" ~ "grips",
+    x == "left" ~ "left",
+    x == "right" ~ "right",
+    TRUE ~ NA_character_
+  )
+}
+
 # introducing variable for coloured plotting
 equip_artefacts <- equip_artefacts %>%
   dplyr::mutate(
@@ -66,7 +83,6 @@ equip_artefacts <- equip_artefacts %>%
           c("Aussenbeschläge (Nach Randornamenten)", 
             "Schildbänder", 
             "Armbügel und deren Ansatzplatten",
-            "Treibverzierte Bronzerundschilde",
             "Silhouettenbleche")
         ),
       equipment_type == "Cuirass" ~ 
@@ -75,7 +91,7 @@ equip_artefacts <- equip_artefacts %>%
     )
   ) %>%
   dplyr::mutate(
-    special = tidyr::replace_na(special, "")
+    special = special %>% translate() %>% tidyr::replace_na("...")
   )
 
 # define artefact type level order
@@ -92,45 +108,48 @@ equip_artefacts$equipment_type <- factor(
     "Greave",
     "Ankle guard",
     "Foot guard"
-  ) %>% rev
+  )
 )
 
 # count the number of artefacts by type
 equip_count_general <- equip_artefacts %>%
   dplyr::group_by(
-    equipment_type
+    equipment_type, special
   ) %>%
   dplyr::summarise(
     sum = dplyr::n()
   )
 
 #### plot B: simple panoply artefact distribution ####
-equip_artefacts %>%
+B <- equip_artefacts %>%
   ggplot() +
   facet_grid(rows = "equipment_type", scales = "free_y", space = "free_y", switch = "y") +
   geom_bar(
     aes(
       x = special
     ),
-    position = position_dodge(width = 1)
+    position = position_dodge(width = 1),
+    fill = "darkgrey"
   ) +
   # geom_label(
   #   data = equip_count_general,
   #   aes(
-  #     x = equipment_type,
+  #     x = special,
   #     y = -50,
-  #     label = sum
+  #     label = sum,
   #   ),
-  #   size = 3.7,
+  #   size = 3,
   #   fill = "darkgrey",
-  #   color = "white"
+  #   color = "white",
+  #   position = position_dodge(width = 1)
   # ) +
   theme_bw() +
   theme(
-    axis.text = element_text(size = 12),
+    axis.text = element_text(size = 11),
     axis.text.y = element_text(hjust = 0),
-    axis.title.x = element_text(size = 12),
-    legend.position = "bottom"
+    axis.title.x = element_text(size = 11),
+    legend.position = "bottom",
+    strip.text = element_text(size = 11)
   ) +
   xlab("") +
   ylab("Number of artefacts") +
@@ -186,7 +205,7 @@ equip_sample <- equip_artefacts %>%
 C <- ggplot() +
   ggridges::geom_density_ridges(
     data = equip_artefacts_timeseries,
-    mapping = aes(x = date, y = equipment_type, height = normalized_weight),
+    mapping = aes(x = date, y = forcats::fct_rev(equipment_type), height = normalized_weight),
     stat = "identity",
     alpha = 0.5,
     size = 0.2,
@@ -195,7 +214,7 @@ C <- ggplot() +
   ) +
   geom_jitter(
     data = equip_sample,
-    aes(x = dating_sampled, y = equipment_type, colour = greave_orientation),
+    aes(x = dating_sampled, y = forcats::fct_rev(equipment_type), colour = greave_orientation),
     size = 0.5, height = 0.15
   ) +
   theme_bw() +
@@ -224,9 +243,17 @@ C <- ggplot() +
   ) 
 
 #### combine plots ####
-top_row <- cowplot::plot_grid(A, B, labels = c('A', 'B'), align = 'h', rel_widths = c(0.5, 1))
+top_row <- cowplot::plot_grid(
+  B, A, 
+  labels = c('A', 'B'), rel_widths = c(1, 0.5),
+  label_size = 16
+)
 
-p <- cowplot::plot_grid(top_row, C, labels = c('', 'C'), ncol = 1, rel_heights = c(0.5, 0.8))
+p <- cowplot::plot_grid(
+  top_row, C, 
+  labels = c('', 'C'), ncol = 1, rel_heights = c(0.6, 0.7),
+  label_size = 16
+)
 
 ggsave(
   filename = "07_panoply_completeness.png",
