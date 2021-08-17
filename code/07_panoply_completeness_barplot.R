@@ -20,13 +20,7 @@ artefacts %<>%
   dplyr::mutate(
     equipment_type = dplyr::case_when(
       typology_class_2 == "Helmet" ~ "Helmet",
-      typology_class_3 %in% c(
-        "Aussenbeschläge (Nach Randornamenten)", 
-        "Schildbänder", 
-        "Armbügel und deren Ansatzplatten",
-        "Treibverzierte Bronzerundschilde",
-        "Silhouettenbleche"
-      ) ~ "Shield(fragment)",
+      typology_class_2 == "Shield and accessories" ~ "Shield(fragment)",
       typology_class_2 %in% c(
         "Lance head (bronze)",
         "Spear head (bronze)",
@@ -49,6 +43,39 @@ artefacts %<>%
 equip_artefacts <- artefacts %>%
   dplyr::filter(
     !is.na(equipment_type) 
+  )
+
+na_if_not <- function(x, y) {
+  purrr::map_chr(x, function(z) { if (z %in% y) { z } else { NA_character_ } })
+}
+
+# introducing variable for coloured plotting
+equip_artefacts <- equip_artefacts %>%
+  dplyr::mutate(
+    special = dplyr::case_when(
+      equipment_type == "Helmet" ~ 
+        na_if_not(
+          as.character(typology_class_3), 
+          c("Korinthischer Helm", "Kegelhelm", "Illyrischer Helm", "Chalkidischer Helm")
+        ),
+      equipment_type == "Greave" ~ 
+        dplyr::na_if(as.character(greave_orientation), "(Missing)"),
+      equipment_type == "Shield(fragment)" ~ 
+        na_if_not(
+          as.character(typology_class_3),
+          c("Aussenbeschläge (Nach Randornamenten)", 
+            "Schildbänder", 
+            "Armbügel und deren Ansatzplatten",
+            "Treibverzierte Bronzerundschilde",
+            "Silhouettenbleche")
+        ),
+      equipment_type == "Cuirass" ~ 
+        dplyr::na_if(as.character(typology_class_3), "Glockenpanzer"),
+      TRUE ~ NA_character_
+    )
+  ) %>%
+  dplyr::mutate(
+    special = tidyr::replace_na(special, "")
   )
 
 # define artefact type level order
@@ -78,25 +105,26 @@ equip_count_general <- equip_artefacts %>%
   )
 
 #### plot B: simple panoply artefact distribution ####
-B <- equip_artefacts %>%
+equip_artefacts %>%
   ggplot() +
+  facet_grid(rows = "equipment_type", scales = "free_y", space = "free_y", switch = "y") +
   geom_bar(
     aes(
-      x = equipment_type,
-      fill = forcats::fct_rev(greave_orientation)
-    )
-  ) +
-  geom_label(
-    data = equip_count_general,
-    aes(
-      x = equipment_type,
-      y = -50,
-      label = sum
+      x = special
     ),
-    size = 3.7,
-    fill = "darkgrey",
-    color = "white"
+    position = position_dodge(width = 1)
   ) +
+  # geom_label(
+  #   data = equip_count_general,
+  #   aes(
+  #     x = equipment_type,
+  #     y = -50,
+  #     label = sum
+  #   ),
+  #   size = 3.7,
+  #   fill = "darkgrey",
+  #   color = "white"
+  # ) +
   theme_bw() +
   theme(
     axis.text = element_text(size = 12),
@@ -106,25 +134,27 @@ B <- equip_artefacts %>%
   ) +
   xlab("") +
   ylab("Number of artefacts") +
-  coord_flip(
-    ylim = c(-50, 750)
-  ) +
-  scale_fill_manual(
-    limits = c("left", "right"),
-    values = wescolors[c(1,4)],
-    name = "Orientation",
-    na.value = "darkgrey"
-  ) +
+  coord_flip() +
+  # scale_fill_manual(
+  #   limits = c("left", "right"),
+  #   values = wescolors[c(1,4)],
+  #   name = "Orientation",
+  #   na.value = "darkgrey"
+  # ) +
   guides(
     fill = "none"
   ) +
-  annotate(
-    "text", 
-    x = "Shield(fragment)", y = 320, 
-    label = "Fragments often do not represent complete shields!",
-    color = "white",
-    size = 3.2
-  )
+  theme(strip.text.y.left = element_text(angle = 0)) +
+  scale_x_discrete(position = "top")
+
+# +
+  # annotate(
+  #   "text",
+  #   x = "Shield(fragment)", y = 320, 
+  #   label = "Fragments often do not represent complete shields!",
+  #   color = "white",
+  #   size = 3.2
+  # )
 
 #### further data preparation: segregation by time ####
 
