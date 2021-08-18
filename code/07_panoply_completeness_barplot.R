@@ -4,7 +4,7 @@ library(ggplot2)
 #### plot A: schematic panoply ####
 image <- magick::image_read_svg("data/panoply.svg", width = 1000) %>%
   magick::image_background(color = "white")
-A <- cowplot::ggdraw() + cowplot::draw_image(image, scale = 1.13, valign = 0.75, halign = 0.6)
+A <- cowplot::ggdraw() + cowplot::draw_image(image, scale = 1.1, valign = 0.75, halign = 0.6)
 
 #### data preparation ####
 
@@ -60,6 +60,8 @@ translate <- function(x) {
     x == "Schildbänder" ~ "straps",
     x == "Aussenbeschläge (Nach Randornamenten)" ~ "fittings",
     x == "Armbügel und deren Ansatzplatten" ~ "grips",
+    x == "Silhouettenbleche" ~ "sheets",
+    x == "Runde Appliken" ~ "appliques",
     x == "left" ~ "left",
     x == "right" ~ "right",
     TRUE ~ NA_character_
@@ -76,14 +78,15 @@ equip_artefacts <- equip_artefacts %>%
           c("Korinthischer Helm", "Kegelhelm", "Illyrischer Helm", "Chalkidischer Helm")
         ),
       equipment_type == "Greave" ~ 
-        dplyr::na_if(as.character(greave_orientation), "(Missing)"),
+        dplyr::na_if(as.character(orientation), "(Missing)"),
       equipment_type == "Shield(fragment)" ~ 
         na_if_not(
           as.character(typology_class_3),
           c("Aussenbeschläge (Nach Randornamenten)", 
             "Schildbänder", 
             "Armbügel und deren Ansatzplatten",
-            "Silhouettenbleche")
+            "Silhouettenbleche",
+            "Runde Appliken")
         ),
       equipment_type == "Cuirass" ~ 
         dplyr::na_if(as.character(typology_class_3), "Glockenpanzer"),
@@ -147,7 +150,9 @@ B <- equip_artefacts %>%
     axis.text.y = element_text(hjust = 0, size = 10),
     axis.title.x = element_text(size = 11),
     legend.position = "bottom",
-    strip.text = element_text(size = 11)
+    strip.text = element_text(size = 11),
+    strip.text.y.left = element_text(angle = 0),
+    panel.spacing = unit(0.1, "lines")
   ) +
   xlab("") +
   ylab("Number of artefacts") +
@@ -161,17 +166,7 @@ B <- equip_artefacts %>%
   guides(
     fill = "none"
   ) +
-  theme(strip.text.y.left = element_text(angle = 0)) +
   scale_x_discrete(position = "top")
-
-# +
-  # annotate(
-  #   "text",
-  #   x = "Shield(fragment)", y = 320, 
-  #   label = "Fragments often do not represent complete shields!",
-  #   color = "white",
-  #   size = 3.2
-  # )
 
 #### further data preparation: segregation by time ####
 
@@ -220,7 +215,7 @@ C <- ggplot() +
     axis.text = element_text(size = 12),
     axis.text.y = element_text(hjust = 0),
     axis.title.x = element_text(size = 12),
-    legend.position = "bottom",
+    legend.position = "right",
     legend.text = element_text(size = 12),
     legend.title = element_text(size = 12)
   ) +
@@ -243,13 +238,13 @@ C <- ggplot() +
 #### combine plots ####
 top_row <- cowplot::plot_grid(
   B, A, 
-  labels = c('A', 'B'), rel_widths = c(1, 0.5),
+  labels = c('A', 'B'), rel_widths = c(0.8, 0.5),
   label_size = 16
 )
 
 p <- cowplot::plot_grid(
   top_row, C, 
-  labels = c('', 'C'), ncol = 1, rel_heights = c(0.6, 0.7),
+  labels = c('', 'C'), ncol = 1, rel_heights = c(0.7, 0.7),
   label_size = 16
 )
 
