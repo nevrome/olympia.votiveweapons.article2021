@@ -99,13 +99,15 @@ olympia_artefacts_3$find_area[olympia_artefacts_3$find_area %in%
 # greave orientation
 olympia_artefacts_3 %<>%
   dplyr::mutate(
-    greave_orientation = dplyr::case_when(
+    orientation = dplyr::case_when(
       typology_class_2 == "Beinschiene" & grepl("Links", description) ~ "left",
       typology_class_2 == "Beinschiene" & grepl("Rechts", description) ~ "right",
+      typology_class_2 == "Glockenpanzer, Brustschale" ~ "front",
+      typology_class_2 == "Glockenpanzer, Rückenschale" ~ "back",
       TRUE ~ NA_character_
     )
   ) %>% dplyr::select(-description)
-olympia_artefacts_3$greave_orientation %<>% forcats::fct_explicit_na()
+olympia_artefacts_3$orientation %<>% forcats::fct_explicit_na()
 
 # simplification of overly complicated shield typology
 olympia_artefacts_3[
@@ -158,6 +160,34 @@ weapon_artefacts %<>%
     ]
   )
 
+#### fine-grained manual data cleaning ####
+
+weapon_artefacts -> w
+w$typology_class_2[w$typology_class_3 %in% c(
+  "Kammhelm"
+)] <- "Helmet"
+w$typology_class_3[w$typology_class_3 %in% c(
+  "Bronzene Sauroter (Lanzeschuhe)Bronzene Sauroter (Lanzeschuhe)",
+  "Bronzene Sauroter (Lanzeschuhe)"
+)] <- "Bronzene Saurotere (Lanzenschuhe)"
+w$typology_class_3[w$typology_class_3 %in% c(
+  "Befestigungen für HandhabenD2"
+)] <- "Befestigungen für Handhaben"
+w$typology_class_3[w$typology_class_3 %in% c(
+  "Eiserne Machairen (einshneidige Hiebschwerter)"
+)] <- "Eiserne Machairen (einschneidige Hiebschwerter)"
+w$typology_class_4[w$typology_class_4 %in% c(
+  "Unbekannt",
+  "Einem einzigen Stück"
+)] <- NA_character_
+w$typology_class_4[w$typology_class_4 %in% c(
+  "Unbekannt",
+  "Einem einzigen Stück",
+  "C Stufe  I (Unsicher)",
+  "C Stufe I (Unsicher)"
+)] <- NA_character_
+w -> weapon_artefacts
+
 #### finalize data types ####
 
 # factors
@@ -166,7 +196,7 @@ weapon_artefacts %<>%
     .vars = dplyr::vars(
       tidyselect::one_of(
         "find_area",
-        "greave_orientation"
+        "orientation"
       ),
       tidyselect::starts_with(
         "typology_class"
@@ -182,6 +212,7 @@ weapon_artefacts %<>%
 # unfiltered
 weapons_unfiltered <- weapon_artefacts %>%
   dplyr::filter(
+    typology_class_1 == "Waffe" &
     !is.na(typology_class_2)
   )
 readr::write_tsv(
@@ -198,9 +229,7 @@ weapons <- weapon_artefacts %>%
   dplyr::filter(
     # type
     typology_class_1 == "Waffe" &
-    !is.na(typology_class_2) & 
-    !is.na(typology_class_3) &
-    !is.na(typology_class_4) &
+    !is.na(typology_class_2) &
     # area
     !is.na(find_area) &
     # dating
