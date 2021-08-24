@@ -1,5 +1,5 @@
-# The main dataset (here "data/2019-03-28_Olympia_DB.csv") can not be shared for this
-# publication, so only the two derived datasets 'weapons' and 'weapons_unfiltered'
+# The main dataset (here "data/2019-03-28_Olympia_DB.csv") can not be shared 
+# so only the two derived datasets 'weapons' and 'weapons_unfiltered'
 # are available in this repository with the files "data/weapons.tsv" and
 # "data/weapons_unfiltered.tsv"
 

@@ -1,5 +1,6 @@
 library(magrittr)
 library(ggplot2)
+source("code/00D_aoristAAR_functions.R")
 
 #### plot A: schematic panoply ####
 image <- magick::image_read_svg("data/panoply.svg", width = 1000) %>%
@@ -170,7 +171,7 @@ B <- equip_artefacts %>%
 
 #### further data preparation: segregation by time ####
 
-equip_artefacts_timeseries <- aoristAAR::aorist(
+equip_artefacts_timeseries <- aorist(
   equip_artefacts,
   split_vars = c("equipment_type"),
   from = "dating_typology_start",

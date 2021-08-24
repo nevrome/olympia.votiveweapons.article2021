@@ -1,5 +1,6 @@
 library(magrittr)
 library(ggplot2)
+source("code/00D_aoristAAR_functions.R")
 
 #### data preparation ####
 
@@ -27,7 +28,7 @@ site_areas %<>%
   )
 
 # calculate time series
-artefact_timeseries_per_area_number_df <-  aoristAAR::aorist(
+artefact_timeseries_per_area_number_df <-  aorist(
   artefacts,
   split_vars = c("find_area"),
   from = "dating_typology_start",

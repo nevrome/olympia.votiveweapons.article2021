@@ -1,5 +1,6 @@
 library(magrittr)
 library(ggplot2)
+source("code/00D_aoristAAR_functions.R")
 
 #### data preparation ####
 
@@ -49,7 +50,7 @@ type_fine_amount <- artefacts %>%
   )
 
 # calculate time series
-artefact_timeseries_df <- aoristAAR::aorist(
+artefact_timeseries_df <- aorist(
   artefacts,
   split_vars = c("typology_class_2", "typology_fine"),
   from = "dating_typology_start",

@@ -1,5 +1,6 @@
 library(magrittr)
 library(ggplot2)
+source("code/00D_aoristAAR_functions.R")
 
 #### data preparation ####
 
@@ -28,7 +29,7 @@ types_amount <- artefacts %>%
   )
 
 # time series by artefact category
-artefact_timeseries_df <- aoristAAR::aorist(
+artefact_timeseries_df <- aorist(
   artefacts,
   split_vars = c("typology_class_2"),
   from = "dating_typology_start",

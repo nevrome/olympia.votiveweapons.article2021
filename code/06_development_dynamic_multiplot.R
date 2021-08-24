@@ -1,5 +1,6 @@
 library(magrittr)
 library(ggplot2)
+source("code/00D_aoristAAR_functions.R")
 
 #### load data ####
 load("data/weapons.RData")
@@ -8,7 +9,7 @@ wescolors <- wesanderson::wes_palette("Zissou1", 5)
 #### A: weapons time series ####
 
 # calculate time series with method = "number"
-weapons_timeseries_number <- aoristAAR::aorist(
+weapons_timeseries_number <- aorist(
   weapons,
   split_vars = c(),
   from = "dating_typology_start",
@@ -23,7 +24,7 @@ weapons_timeseries_number <- aoristAAR::aorist(
   )
 
 # calculate time series with method = "weight"
-weapons_timeseries_weight <- aoristAAR::aorist(
+weapons_timeseries_weight <- aorist(
   weapons,
   split_vars = c(),
   from = "dating_typology_start",
@@ -122,7 +123,7 @@ classes <- artefacts %>%
   dplyr::ungroup()
 
 # calculate time series
-classes_timeseries <- aoristAAR::aorist(
+classes_timeseries <- aorist(
   classes,
   split_vars = c(),
   from = "dating_typology_start",
@@ -223,7 +224,7 @@ C <- ggplot(deri) +
 #### cultural distance decades ####
 
 # calculate time series
-artefacts_timeseries <- aoristAAR::aorist(
+artefacts_timeseries <- aorist(
   artefacts,
   split_vars = c("typology_fine"),
   stepwidth = 10,
@@ -239,16 +240,12 @@ df <- artefacts_timeseries %>%
   )
 
 # remove column date and replace NA with 0
-ma <- df %>%
+ma_corr <- df %>%
   dplyr::select(
     -date
   ) %>%
   as.matrix() %>%
   tidyr::replace_na(0)
-
-# expriments with different corrections
-ma_corr <- ma# %>%
-  #quantAAR::booleanize()
 
 # calculate euclidian distance
 distance_timesteps <- c()
