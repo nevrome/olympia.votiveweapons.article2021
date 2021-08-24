@@ -2,7 +2,7 @@
 
 ### Compendium DOI:
 
-<http://dx.doi.org/>…
+<http://dx.doi.org/10.17605/OSF.IO/RV2ZF>
 
 The files at the URL above will generate the results as found in the publication. The files hosted at <https://github.com/nevrome/olympia.votiveweapons.article2021> are the development versions and may have changed since the paper was published.
 
