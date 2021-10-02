@@ -23,7 +23,7 @@ main = shakeArgs shakeOptions {shakeFiles = "_build"} $ do
             dataFiles = [
                   "data" </> "weapons_unfiltered.RData"
                 ]
-        need [script] ++ dataFiles
+        need $ [script] ++ dataFiles
         cmd_ "Rscript" script
 
     "plots/02_general_weapons_distribution_map.png" %> \out -> do
