@@ -145,7 +145,7 @@ spline <- tibble::tibble(
 )
 
 classes_timeseries$name <- "Maximum number of artefact classes"
-spline$name <- "Smoothing spline (cubic, spar = 0.5)"
+spline$name <- "Smoothing spline (cubic, spar = 0.7)"
 
 #### Plot B: artefact classes time series ####
 B <- ggplot() +

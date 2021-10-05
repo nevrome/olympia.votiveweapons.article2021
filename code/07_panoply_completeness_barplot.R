@@ -240,7 +240,9 @@ C <- ggplot() +
 top_row <- cowplot::plot_grid(
   B, A, 
   labels = c('A', 'B'), rel_widths = c(0.8, 0.5),
-  label_size = 16
+  label_size = 16,
+  label_x = 0.01,
+  label_y = 0.99
 )
 
 p <- cowplot::plot_grid(
