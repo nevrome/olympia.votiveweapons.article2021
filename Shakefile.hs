@@ -8,7 +8,7 @@ import Development.Shake.Util
  
 main :: IO ()
 main = shakeArgs shakeOptions {shakeFiles = "_build"} $ do
-    want $ map (\x -> "plots" </> x) [
+    want $ map ("plots" </>) [
           "01_typology_class_2_distribution.png"
         , "02_general_weapons_distribution_map.png"
         , "03_find_area_time_series_map.png"
@@ -23,7 +23,7 @@ main = shakeArgs shakeOptions {shakeFiles = "_build"} $ do
             dataFiles = [
                   "data" </> "weapons_unfiltered.RData"
                 ]
-        need $ [script] ++ dataFiles
+        need $ script : dataFiles
         cmd_ "Rscript" script
 
     "plots/02_general_weapons_distribution_map.png" %> \out -> do
@@ -34,5 +34,5 @@ main = shakeArgs shakeOptions {shakeFiles = "_build"} $ do
                 , "data" </> "background_map_olympia_epsg25834.tif"
                 , "data" </> "translation_de_en_find_area.csv"
                 ]
-        need $ [script] ++ dataFiles
+        need $ script : dataFiles
         cmd_ "Rscript " script
