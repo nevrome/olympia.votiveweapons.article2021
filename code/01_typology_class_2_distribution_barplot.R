@@ -26,7 +26,7 @@ type_count <- artefacts %>%
   # classify dating information
   dplyr::mutate(
     dated = dplyr::case_when(
-      abs(dating_typology_start - dating_typology_end) >= 100 ~ "less precise (>100 years)",
+      abs(dating_typology_start - dating_typology_end) >= 100 ~ "less precise (\u2265100 years)",
       abs(dating_typology_start - dating_typology_end) < 100 ~ "more precise (<100 years)",
       is.na(dating_typology_start) & is.na(dating_typology_end) ~ "no dating information"
     )
@@ -42,7 +42,7 @@ type_count <- artefacts %>%
 
 # define factor levels for the classified dating information
 type_count$dated <- factor(type_count$dated, levels = c(
-  "no dating information", "less precise (>100 years)", "more precise (<100 years)"
+  "no dating information", "less precise (\u2265100 years)", "more precise (<100 years)"
 ))
 
 # general artefact type count
@@ -99,7 +99,7 @@ ggsave(
   device = "png",
   path = "plots",
   width = 150,
-  height = 180,
+  height = 170,
   units = "mm",
   dpi = 300
 )
