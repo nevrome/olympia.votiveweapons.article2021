@@ -1,6 +1,6 @@
 library(magrittr)
 library(ggplot2)
-source("code/00D_aoristAAR_functions.R")
+source("code/00D_aoristAAR_functions.R", local = T)
 
 set.seed(123)
 

@@ -5,7 +5,7 @@ purrr::walk(
   code_files,
   function(y) {
     message("\n###### ", y, " ######\n")
-    source(y)
+    source(y, local = T)
     rm(list = ls())
   }
 )
