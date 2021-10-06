@@ -1,6 +1,8 @@
 library(magrittr)
 library(ggplot2)
 
+set.seed(123)
+
 #### data preparation ####
 
 # load data
@@ -83,7 +85,7 @@ p <- ggplot() +
   ggrepel::geom_label_repel(
     data = area_label_positions,
     mapping = aes(x = x, y = y, label = area_name),
-    size = 5.5,
+    size = 6,
     alpha = 0.6
   ) +
   theme_bw() +

@@ -119,8 +119,9 @@ classes <- artefacts %>%
   dplyr::group_by(
     dating_typology_start, dating_typology_end, typology_fine
   ) %>%
-  dplyr::summarise() %>%
-  dplyr::ungroup()
+  dplyr::summarise(
+    .groups = "drop"
+  )
 
 # calculate time series
 classes_timeseries <- aorist(
@@ -296,7 +297,7 @@ D <- ggplot() +
     ), 
     breaks = c(0, 100, 200)
   ) +
-  scale_size(range = c(0.3, 2), guide = FALSE) +
+  scale_size(range = c(0.3, 2), guide = "none") +
   scale_x_continuous(breaks = seq(-1000, -400, 100), limits = c(-1000, -399)) +
   ylim(0, max(distance$cumsum_ed)) +
   theme_bw() +

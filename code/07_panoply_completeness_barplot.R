@@ -2,6 +2,8 @@ library(magrittr)
 library(ggplot2)
 source("code/00D_aoristAAR_functions.R")
 
+set.seed(123)
+
 #### plot A: schematic panoply ####
 image <- magick::image_read_svg("data/panoply.svg", width = 1000) %>%
   magick::image_background(color = "white")
@@ -121,7 +123,8 @@ equip_count_general <- equip_artefacts %>%
     equipment_type, special
   ) %>%
   dplyr::summarise(
-    sum = dplyr::n()
+    sum = dplyr::n(),
+    .groups = "drop"
   )
 
 #### plot B: simple panoply artefact distribution ####

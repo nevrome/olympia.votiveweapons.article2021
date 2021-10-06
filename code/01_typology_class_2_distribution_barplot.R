@@ -36,9 +36,9 @@ type_count <- artefacts %>%
     typology_class_2, dated
   ) %>%
   dplyr::summarise(
-    n = dplyr::n()
-  ) %>%
-  dplyr::ungroup()
+    n = dplyr::n(),
+    .groups = "drop"
+  )
 
 # define factor levels for the classified dating information
 type_count$dated <- factor(type_count$dated, levels = c(

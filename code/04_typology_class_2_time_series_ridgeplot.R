@@ -76,7 +76,8 @@ typology_class_2_levels <- typology_class_2_centers %>%
 
 artefact_timeseries %<>%
   dplyr::left_join(
-    types_amount
+    types_amount,
+    by = "typology_class_2"
   ) %>%
   dplyr::mutate(
     typology_class_2 = factor(typology_class_2, levels = typology_class_2_levels)
