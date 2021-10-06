@@ -190,7 +190,6 @@ w -> weapon_artefacts
 
 #### finalize data types ####
 
-# factors
 weapon_artefacts %<>%
   dplyr::mutate_at(
     .vars = dplyr::vars(
@@ -205,6 +204,10 @@ weapon_artefacts %<>%
     .funs = function(x) {
       as.factor(x)
     }
+  ) %>%
+  dplyr::mutate(
+    dating_typology_start = as.integer(dating_typology_start),
+    dating_typology_end = as.integer(dating_typology_end)
   )
 
 #### create relevant subset for this paper and store them ####
@@ -246,3 +249,4 @@ save(
   weapons, 
   file = "data/weapons.RData"
 )
+
