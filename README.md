@@ -17,11 +17,11 @@ The files at the URL above will generate the results as found in the publication
 
 ### Overview of contents:
 
-This repository contains the directories `code` and `data` to reproduce the preparations, calculations and figure renderings in this paper. The `plots` directory contains readily rendered versions of the plots.
+This repository contains the directories `code` and `data` to reproduce the data preparation, calculations and figure renderings in this paper. The `plots` directory contains readily rendered versions of the plots, with the figure captions in another README.md file in this folder.
 
 ### How to reproduce:
 
-As the data and code in this repository are complete and self-contained, it can be reproduced with any R environment (tested for R v4.1.0). The necessary package dependencies are documented in the `DESCRIPTION` file and can be installed manually or automatically with `devtools::install(repos = "https://mran.microsoft.com/snapshot/2021-08-24")`.
+As the data and code in this repository are complete and self-contained, it can be reproduced with only an R environment (tested for R v4.1.0). The necessary package dependencies are documented in the `DESCRIPTION` file and can be installed manually or automatically with `devtools::install(repos = "https://mran.microsoft.com/snapshot/2021-08-24")`.
 
 ### Licenses:
 
